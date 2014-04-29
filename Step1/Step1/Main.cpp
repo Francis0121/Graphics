@@ -17,6 +17,7 @@ void mouse(int button, int state, int x, int y);
 void mousewheel(int wheel, int direction, int x, int y);
 void dragAndDrop(int x, int y);
 
+
 typedef struct {
 	GLubyte *order;
 	int size;
