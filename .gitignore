@@ -1,8 +1,5 @@
 *.sdf
 *.suo
-*.vcxproj
-*.vcxproj.*
-*.vcxproj.**
 Debug/
 */Debug/*
 */Debug/**
