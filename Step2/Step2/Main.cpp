@@ -6,12 +6,12 @@
 #define TRUE 1
 #define FALSE 0
 
-
 using namespace std;
 
 void InitGeometry();
 void InitVBO();
-void DrawVBO();
+void DrawTopVBO();
+void DrawDownVBO();
 void display();
 void reshape(int w, int h);
 void mouse(int button, int state, int x, int y);
@@ -29,18 +29,29 @@ typedef struct {
 	float color[4]; 
 } Vertex; 
 
-Vertex triangleVertex[56];
+Vertex triangleVertex[40];
 Vertex lineVertex[16]; 
 Index indeices[5];
 GLuint vboHandle[2];
-GLuint indexVBO[5]; 
+GLuint indexVBO[5];
+
+// ~ New Vertex
+// Vertex & Color
+Vertex tVertex[24]; // Top Vertex
+Vertex dVertex[24]; // Down Vertex
+Vertex lVertex[20]; // Line Vertex
+Index tIndecies[6]; // Top Indeices
+Index dIndecise[6]; // Down Indeices
+// GL Buffer
+GLuint vacVBO[3]; // Vertex And Color Vertex Buffer Object
+GLuint tiVBO[6]; // top index Vertex Buffer Object
+GLuint diVBO[6]; // down index Vertex Buffer Object
 
 int frame_loop = 0;
 GLdouble aspect = 3.0f/4.0f;
 GLfloat eyex = 0.0f;
 GLfloat eyez = 4.0f;
 
-float opacity = 1.0f;
 float scale = 1.0f;
 int mouse_flag = FALSE;
 int intrinsic_flag = TRUE;
@@ -67,203 +78,300 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(display);
 	glutMainLoop();
 
-	for(int i=0; i<4;i++)
+	for(int i=0; i<5;i++)
 		delete indeices[i].order;
 	return 0;
 }
 
 void InitGeometry() { 
-	GLfloat black = 204.0f/255.0f;
-	GLfloat white = 255.0f/255.0f;
-	GLfloat gray = 50.0f/255.0f;
-
-	Vertex vertex1[56] = {
-							// Black
-							2.8f, 3.8f, 0.0f,		black, black, black, opacity, // 0 Top Left 
-							0.1f, 3.8f, 0.0f,		black, black, black, opacity, // 1
-							0.1f, 0.1f, 0.0f,		black, black, black, opacity, // 2
-							2.8f, 0.1f, 0.0f,		black, black, black, opacity, // 3
-
-							-0.1f, 3.8f, 0.0f,		black, black, black, opacity, // 4 Top Right
-							-2.8f, 3.8f, 0.0f,		black, black, black, opacity, // 5
-							-2.8f, 0.1f, 0.0f,		black, black, black, opacity, // 6
-							-0.1f, 0.1f, 0.0f,		black, black, black, opacity, // 7
-
-							-0.1f, -0.1f, 0.0f,		black, black, black, opacity, // 8 Bottom Right
-							-2.8f, -0.1f, 0.0f,		black, black, black, opacity, // 9
-							-2.8f, -3.8f, 0.0f,		black, black, black, opacity, // 10
-							-0.1f, -3.8f, 0.0f,		black, black, black, opacity, // 11
-
-							2.8f, -0.1f, 0.0f,		black, black, black, opacity, // 12 Bottom Left
-							0.1f, -0.1f, 0.0f,		black, black, black, opacity, // 13
-							0.1f, -3.8f, 0.0f,		black, black, black, opacity, // 14
-							2.8f, -3.8f, 0.0f,		black, black, black, opacity, // 15
-
-							3.0f, 4.0f, 0.0f,		black, black, black, opacity, // 16 Background
-							3.0f, -4.0f, 0.0f,		black, black, black, opacity, // 17
-							-3.0f, -4.0f, 0.0f,		black, black, black, opacity, // 18
-							-3.0f, 4.0f,	 0.0f,		black, black, black, opacity, // 19
-							// White 
-							2.8f, 3.8f, 0.0f,		white, white, white, opacity, // 20 Top Left 
-							0.1f, 3.8f, 0.0f,		white, white, white, opacity, // 21
-							0.1f, 0.1f, 0.0f,		white, white, white, opacity, // 22
-							2.8f, 0.1f, 0.0f,		white, white, white, opacity, // 23
-
-							-0.1f, 3.8f, 0.0f,		white, white, white, opacity, // 24 Top Right
-							-2.8f, 3.8f, 0.0f,		white, white, white, opacity, // 25
-							-2.8f, 0.1f, 0.0f,		white, white, white, opacity, // 26
-							-0.1f, 0.1f, 0.0f,		white, white, white, opacity, // 27
-
-							-0.1f, -0.1f, 0.0f,		white, white, white, opacity, // 28 Bottom Left
-							-2.8f, -0.1f, 0.0f,		white, white, white, opacity, // 29
-							-2.8f, -3.8f, 0.0f,		white, white, white, opacity, // 30
-							-0.1f, -3.8f, 0.0f,		white, white, white, opacity, // 31
-
-							2.8f, -0.1f, 0.0f,		white, white, white, opacity, // 32 Bottom Right
-							0.1f, -0.1f, 0.0f,		white, white, white, opacity, // 33
-							0.1f, -3.8f, 0.0f,		white, white, white, opacity, // 34
-							2.8f, -3.8f, 0.0f,		white, white, white, opacity, // 35
-
-							3.0f, 4.0f, 0.0f,		white, white, white, opacity, // 36 Background
-							3.0f, -4.0f, 0.0f,		white, white, white, opacity, // 37
-							-3.0f, -4.0f, 0.0f,		white, white, white, opacity, // 38
-							-3.0f, 4.0f,	 0.0f,		white, white, white, opacity, // 39
-
-							2.8f, 3.8f, -0.5f,		1.0f, black, black, opacity, // 40 Top Left 3D 
-							0.1f, 3.8f, -0.5f,		1.0f, black, black, opacity, // 41
-							0.1f, 0.1f, -0.5f,		1.0f, black, black, opacity, // 42
-							2.8f, 0.1f,	-0.5f,		1.0f, black, black, opacity, // 43
-
-							-0.1f, 3.8f, -0.5f,		1.0f, black, black, opacity, // 44 Top Right
-							-2.8f, 3.8f, -0.5f,		1.0f, black, black, opacity, // 45
-							-2.8f, 0.1f, -0.5f,		1.0f, black, black, opacity, // 46
-							-0.1f, 0.1f, -0.5f,		1.0f, black, black, opacity, // 47
-
-							-0.1f, -0.1f, -0.5f,		1.0f, black, black, opacity, // 48 Bottom Right
-							-2.8f, -0.1f, -0.5f,		1.0f, black, black, opacity, // 49
-							-2.8f, -3.8f, -0.5f,		1.0f, black, black, opacity, // 50
-							-0.1f, -3.8f, -0.5f,		1.0f, black, black, opacity, // 51
-
-							2.8f, -0.1f, -0.5f,		1.0f, black, black, opacity, // 52 Bottom Left
-							0.1f, -0.1f, -0.5f,		1.0f, black, black, opacity, // 53
-							0.1f, -3.8f,	 -0.5f,		1.0f, black, black, opacity, // 54
-							2.8f, -3.8f, -0.5f,		1.0f, black, black, opacity
-						};
-	memcpy(triangleVertex, vertex1, 56*sizeof(Vertex));
 	
-	Vertex vertex2[16] = {
-							2.8f, 3.8f, 0.0f,		gray, gray, gray, opacity, // 0 Top Left 
-							0.1f, 3.8f, 0.0f,		gray, gray, gray, opacity, // 1
-							0.1f, 0.1f, 0.0f,		gray, gray, gray, opacity, // 2
-							2.8f, 0.1f, 0.0f,		gray, gray, gray, opacity, // 3
+	GLfloat blueC[4] = { 80.0f/255.0f, 80.0f/255.0f, 255.0f/255.0f, 1.0f }; // blueC_color
+	GLfloat whiteC[4] = { 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f, 1.0f }; // white color
+	GLfloat blackC[4] = { 0.0f/255.0f, 0.0f/255.0f, 0.0f/255.0f, 1.0f }; // black color
 
-							-0.1f, 3.8f, 0.0f,		gray, gray, gray, opacity, // 4 Top Right
-							-2.8f, 3.8f, 0.0f,		gray, gray, gray, opacity, // 5
-							-2.8f, 0.1f, 0.0f,		gray, gray, gray, opacity, // 6
-							-0.1f, 0.1f, 0.0f,		gray, gray, gray, opacity, // 7
+	Vertex topV[24] = {
+		2.8f, 3.8f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3],	// 0 Top Right Blue			
+		0.1f, 3.8f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 1
+		0.1f, 0.1f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 2
+		2.8f, 0.1f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 3
 
-							-0.1f, -0.1f, 0.0f,		gray, gray, gray, opacity, // 8 Bottom Right
-							-2.8f, -0.1f, 0.0f,		gray, gray, gray, opacity, // 9
-							-2.8f, -3.8f, 0.0f,		gray, gray, gray, opacity, // 10
-							-0.1f, -3.8f, 0.0f,		gray, gray, gray, opacity, // 11
+		-0.1f, 3.8f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 4 Top Left Blue
+		-2.8f, 3.8f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 5
+		-2.8f, 0.1f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 6
+		-0.1f, 0.1f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 7
 
-							2.8f, -0.1f, 0.0f,		gray, gray, gray, opacity, // 12 Bottom Left
-							0.1f, -0.1f, 0.0f,		gray, gray, gray, opacity, // 13
-							0.1f, -3.8f, 0.0f,		gray, gray, gray, opacity, // 14
-							2.8f, -3.8f, 0.0f,		gray, gray, gray, opacity // 15
-						};
-	memcpy(lineVertex, vertex2, 16*sizeof(Vertex));
+		2.8f, 0.0f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 8 Top Background Blue
+		0.1f, 0.0f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 9
+		-0.1f, 0.0f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 10
+		-2.8f, 0.0f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 11
 
-	GLubyte order[5][36] ={	 
+		2.8f, 3.8f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3],	// 12 Top Right White			
+		0.1f, 3.8f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 13
+		0.1f, 0.1f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 14
+		2.8f, 0.1f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 15
+
+		-0.1f, 3.8f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 16 Top Left White
+		-2.8f, 3.8f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 17
+		-2.8f, 0.1f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 18
+		-0.1f, 0.1f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 19
+
+		2.8f, 0.0f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 20 Etc Background Vertex
+		0.1f, 0.0f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 21
+		-0.1f, 0.0f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 22
+		-2.8f, 0.0f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3] // 23
+	};
+
+	memcpy(tVertex, topV, 24*sizeof(Vertex));
+
+	Vertex downV[24] = {
+		2.8f, -0.1f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 0 Bottom Right Blue
+		0.1f, -0.1f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 1
+		0.1f, -3.8f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 2
+		2.8f, -3.8f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 3
+
+		-0.1f, -0.1f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 4 Bottom Left Blue
+		-2.8f, -0.1f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 5
+		-2.8f, -3.8f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 6
+		-0.1f, -3.8f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 7
+
+		2.8f, 0.0f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 8 Etc Background Vertex
+		0.1f, 0.0f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 9
+		-0.1f, 0.0f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 10
+		-2.8f, 0.0f, 0.0f,		blueC[0], blueC[1], blueC[2], blueC[3], // 11
+
+		2.8f, -0.1f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 12 Bottom Right White
+		0.1f, -0.1f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 13
+		0.1f, -3.8f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 14
+		2.8f, -3.8f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 15
+
+		-0.1f, -0.1f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 16 Bottom Left White
+		-2.8f, -0.1f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 17
+		-2.8f, -3.8f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 18
+		-0.1f, -3.8f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 19
+
+		2.8f, 0.0f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 20 Etc Background Vertex
+		0.1f, 0.0f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 21
+		-0.1f, 0.0f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3], // 22
+		-2.8f, 0.0f, 0.0f,		whiteC[0], whiteC[1], whiteC[2], whiteC[3] // 23
+	};
+
+	memcpy(dVertex, downV, 24*sizeof(Vertex));
+
+	Vertex lineV[24] = {
+		2.8f, 3.8f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 0 Top Left 
+		0.1f, 3.8f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 1
+		0.1f, 0.1f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 2
+		2.8f, 0.1f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 3
+
+		-0.1f, 3.8f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 4 Top Right
+		-2.8f, 3.8f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 5
+		-2.8f, 0.1f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 6
+		-0.1f, 0.1f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 7
+
+		2.8f, -0.1f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 8 Bottom Left
+		0.1f, -0.1f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 9
+		0.1f, -3.8f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 10
+		2.8f, -3.8f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 11
+
+		-0.1f, -0.1f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 12 Bottom Right
+		-2.8f, -0.1f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 13
+		-2.8f, -3.8f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 14
+		-0.1f, -3.8f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 15
+
+		2.8f, 0.0f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 16 Etc Background Vertex
+		0.1f, 0.0f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 17
+		-0.1f, 0.0f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3], // 18
+		-2.8f, 0.0f, 0.0f,		blackC[0], blackC[1], blackC[2], blackC[3] // 19
+	};
+
+	memcpy(lVertex, lineV, 20*sizeof(Vertex));
+
+	GLubyte topI[6][24] ={	 
 							{
-								0, 5, 6, 6, 3, 0, //Top
-								8, 9, 10, 10,11, 8, // Bottom Left
-								12, 13, 14, 14, 15, 12, // Bottom Right
-								23, 26, 29, 29, 32, 23, // Background
-								33, 28, 31, 31, 34, 33 // Background
+								0, 5, 6, 6, 3, 0, // Top Blue
+								15, 18, 23, 23, 20, 15 // Background Horizintal
 							},
 							{
-								0, 5, 6, 6, 3, 0, // Top
-								12, 9, 10, 10, 15, 12, // Bottom
-								23, 26, 29, 29, 32, 23 // Background
+								0, 1, 2, 2, 3, 0, // Top Right Blue
+								4, 5, 6, 6, 7, 4, // Top Left Blue
+								13, 16, 19, 19, 14, 13, // Background Horizintal
+								15, 18, 23, 23, 20, 15 // Background Vertical
 							},
 							{
-								4, 5, 10, 10, 11, 4, // Left
-								0, 1, 2, 2, 3, 0, // Right Top
-								12, 13, 14, 14, 15, 12, // Right Bottom
-								21, 24, 31, 31, 34, 21, // Background
-								23, 22, 33, 33, 32, 23 // Background
+								0, 1, 9, 9, 8, 0, // Top Right Full Blue
+								4, 5, 11, 11, 10, 4, // Top Left Full Blue
+								13, 16, 22, 22, 21, 13 // Background Horizintal
 							},
 							{
-								4, 5, 10, 10, 11, 4, // Left
-								0, 1, 14, 14, 15, 0, // Right
-								21, 24, 31, 31, 34, 21 // Background
+								0, 1, 2, 2, 3, 0, // Top Right Blue
+								4, 5, 11, 11, 10, 4, // Top Left Full Blue
+								13, 16, 22, 22, 21, 13, // Background Horizintal
+								15, 14, 21, 21, 20, 15 // Background Vertical
 							},
 							{
-								0, 5, 5, 10, 10, 15, 15, 0
+								0, 1, 9, 9, 8, 0, // Top Right Full Blue
+								4, 5, 6, 6, 7, 4, // Top Left Blue
+								13, 16, 22, 22, 21, 13, // Background Horizintal
+								19, 18, 23, 23, 22, 19 // Background Vertical
+							},
+							{
+								0, 5, 5, 19, 16, 0	
 							}
 						};	
 
-	indeices[0].order = new GLubyte[30];
-	indeices[0].size = 30;
-	memcpy(indeices[0].order, order[0], 30*sizeof(GLubyte));
+	tIndecies[0].order = new GLubyte[12];
+	tIndecies[0].size = 12;
+	memcpy(tIndecies[0].order, topI[0], 12*sizeof(GLubyte));
 
-	indeices[1].order = new GLubyte[18];
-	indeices[1].size = 18;
-	memcpy(indeices[1].order, order[1], 18*sizeof(GLubyte));
-	
-	indeices[2].order = new GLubyte[30];
-	indeices[2].size = 30;
-	memcpy(indeices[2].order, order[2], 30*sizeof(GLubyte));
+	tIndecies[1].order = new GLubyte[24];
+	tIndecies[1].size = 24;
+	memcpy(tIndecies[1].order, topI[1], 24*sizeof(GLubyte));
 
-	indeices[3].order = new GLubyte[18];
-	indeices[3].size = 18;
-	memcpy(indeices[3].order, order[3], 18*sizeof(GLubyte));
+	tIndecies[2].order = new GLubyte[18];
+	tIndecies[2].size = 18;
+	memcpy(tIndecies[2].order, topI[2], 18*sizeof(GLubyte));
 
-	indeices[4].order = new GLubyte[8];
-	indeices[4].size = 8;
-	memcpy(indeices[4].order, order[4], 8*sizeof(GLubyte));
+	tIndecies[3].order = new GLubyte[24];
+	tIndecies[3].size = 24;
+	memcpy(tIndecies[3].order, topI[3], 24*sizeof(GLubyte));
+
+	tIndecies[4].order = new GLubyte[24];
+	tIndecies[4].size = 24;
+	memcpy(tIndecies[4].order, topI[4], 24*sizeof(GLubyte));
+
+	tIndecies[5].order = new GLubyte[6];
+	tIndecies[5].size = 6;
+	memcpy(tIndecies[5].order, topI[5], 6*sizeof(GLubyte));
+
+	GLubyte downI[6][24] ={	 
+							{
+								0, 5, 6, 6, 3, 0, // Bottom Blue
+								20, 23, 17, 17, 12, 20 // Background Horizintal
+							},
+							{
+								0, 1, 2, 2, 3, 0, // Bottom Right Blue
+								4, 5, 6, 6, 7, 4, // Bottom Left Blue
+								20, 23, 17, 17, 12, 20, // Background Horizintal
+								13, 16, 19, 19, 14, 13 // Background Vertical
+							},
+							{
+								8, 9, 2, 2, 3, 8, // Bottom Right Full Blue
+								10, 11, 6, 6, 7, 10, // Bottom Left Full Blue
+								21, 22, 19, 19, 14, 21 // Background Vertical
+							},
+							{
+								0, 1, 2, 2, 3, 0, // Bottom Right Blue
+								10, 11, 6, 6, 7, 10, // Bottom Left Full Blue
+								21, 22, 19, 19, 14, 21, // Background Horizintal
+								20, 21, 13, 13, 12, 20 // Background Vertical
+							},
+							{
+								8, 9, 2, 2, 3, 8, // Top Right Full Blue
+								4, 5, 6, 6, 7, 4, // Top Left Blue
+								21, 22, 19, 19, 14, 21, // Background Horizintal
+								22, 23, 17, 17, 16, 22 // Background Vertical
+							},
+							{
+								16, 11, 11, 14, 14, 19	
+							}
+						};	
+
+	dIndecise[0].order = new GLubyte[12];
+	dIndecise[0].size = 12;
+	memcpy(dIndecise[0].order, downI[0], 12*sizeof(GLubyte));
+
+	dIndecise[1].order = new GLubyte[24];
+	dIndecise[1].size = 24;
+	memcpy(dIndecise[1].order, downI[1], 24*sizeof(GLubyte));
+
+	dIndecise[2].order = new GLubyte[18];
+	dIndecise[2].size = 18;
+	memcpy(dIndecise[2].order, downI[2], 18*sizeof(GLubyte));
+
+	dIndecise[3].order = new GLubyte[24];
+	dIndecise[3].size = 24;
+	memcpy(dIndecise[3].order, downI[3], 24*sizeof(GLubyte));
+
+	dIndecise[4].order = new GLubyte[24];
+	dIndecise[4].size = 24;
+	memcpy(dIndecise[4].order, downI[4], 24*sizeof(GLubyte));
+
+	dIndecise[5].order = new GLubyte[6];
+	dIndecise[5].size = 6;
+	memcpy(dIndecise[5].order, downI[5], 6*sizeof(GLubyte));
 }
 
 void InitVBO() {
-	// ~ VBO Initiate Vertex & Color
-	glGenBuffers(2, vboHandle); 
-	glBindBuffer(GL_ARRAY_BUFFER, vboHandle[0]); 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*56, triangleVertex, GL_STATIC_DRAW);
+	// ~ New Initiate Vertex & Color
+	glGenBuffers(3, vacVBO); 
+	glBindBuffer(GL_ARRAY_BUFFER, vacVBO[0]); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*24, tVertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vboHandle[1]); 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*16, lineVertex, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, vacVBO[1]); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*24, dVertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// ~ VBO Initiate Index
-	glGenBuffers(5, indexVBO); 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO[0]); 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*indeices[0].size, indeices[0].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, vacVBO[2]); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*20, lVertex, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// ~ New Initiatte Index
+	glGenBuffers(6, tiVBO); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tiVBO[0]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*tIndecies[0].size, tIndecies[0].order, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO[1]); 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*indeices[1].size, indeices[1].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tiVBO[1]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*tIndecies[1].size, tIndecies[1].order, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO[2]); 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*indeices[2].size, indeices[2].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tiVBO[2]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*tIndecies[2].size, tIndecies[2].order, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO[3]); 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*indeices[3].size, indeices[3].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tiVBO[3]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*tIndecies[3].size, tIndecies[3].order, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO[4]); 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*indeices[4].size, indeices[4].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tiVBO[4]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*tIndecies[4].size, tIndecies[4].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tiVBO[5]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*tIndecies[5].size, tIndecies[5].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glGenBuffers(6, diVBO); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, diVBO[0]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*dIndecise[0].size, dIndecise[0].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, diVBO[1]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*dIndecise[1].size, dIndecise[1].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, diVBO[2]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*dIndecise[2].size, dIndecise[2].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, diVBO[3]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*dIndecise[3].size, dIndecise[3].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, diVBO[4]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*dIndecise[4].size, dIndecise[4].order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, diVBO[5]); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*dIndecise[5].size, dIndecise[5].order, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void DrawVBO(){
-
-	// ~ Triangles
-	glBindBuffer(GL_ARRAY_BUFFER, vboHandle[0]); 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO[frame_loop]); 
+void DrawTopVBO(){
+	// ~ Draw Top
+	glBindBuffer(GL_ARRAY_BUFFER, vacVBO[0]); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tiVBO[frame_loop]); 
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -271,7 +379,7 @@ void DrawVBO(){
 	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
 	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
 	
-	glDrawElements(GL_TRIANGLES, indeices[frame_loop].size, GL_UNSIGNED_BYTE, (char*) NULL+0); 
+	glDrawElements(GL_TRIANGLES, tIndecies[frame_loop].size, GL_UNSIGNED_BYTE, (char*) NULL+0); 
 	
 	glDisableClientState(GL_VERTEX_ARRAY); 
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -279,9 +387,9 @@ void DrawVBO(){
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
-	// ~ Lines
-	glBindBuffer(GL_ARRAY_BUFFER, vboHandle[1]); 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO[4]); 
+	// ~ Draw Top Line
+	glBindBuffer(GL_ARRAY_BUFFER, vacVBO[2]); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tiVBO[5]); 
 		
 	glEnableClientState(GL_VERTEX_ARRAY); 
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -289,7 +397,46 @@ void DrawVBO(){
 	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
 	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
 
-	glDrawElements(GL_LINES, indeices[4].size, GL_UNSIGNED_BYTE, (char*) NULL+0);
+	glDrawElements(GL_LINES, tIndecies[5].size, GL_UNSIGNED_BYTE, (char*) NULL+0);
+	glLineWidth(2.0f);
+
+	glDisableClientState(GL_VERTEX_ARRAY); 
+	glDisableClientState(GL_COLOR_ARRAY);
+}
+
+void DrawDownVBO(){
+
+	// ~ Draw Bottom
+
+	glBindBuffer(GL_ARRAY_BUFFER, vacVBO[1]); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, diVBO[frame_loop]); 
+	
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	
+	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
+	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
+	
+	glDrawElements(GL_TRIANGLES, dIndecise[frame_loop].size, GL_UNSIGNED_BYTE, (char*) NULL+0); 
+	
+	glDisableClientState(GL_VERTEX_ARRAY); 
+	glDisableClientState(GL_COLOR_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+	// ~ Draw Bottom Line
+
+	glBindBuffer(GL_ARRAY_BUFFER, vacVBO[2]); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, diVBO[5]); 
+		
+	glEnableClientState(GL_VERTEX_ARRAY); 
+	glEnableClientState(GL_COLOR_ARRAY);
+		
+	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
+	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
+
+	glDrawElements(GL_LINES, dIndecise[5].size, GL_UNSIGNED_BYTE, (char*) NULL+0);
 	glLineWidth(2.0f);
 
 	glDisableClientState(GL_VERTEX_ARRAY); 
@@ -320,17 +467,18 @@ void display() {
 				0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f);
 	
-	for(int i=0; i<4; i++){
+	for(int i=0; i<5; i++){
 		glPushMatrix();
 		glTranslatef(0, 0, (GLfloat)-i*5);
 		if(mouse_flag && i == 0){
 			glScalef(1, scale, 1);
 		}
-		DrawVBO();
+		DrawTopVBO();
+		DrawDownVBO();
 		glPopMatrix();
 
 		frame_loop+=1;
-		if(frame_loop == 4)
+		if(frame_loop == 5)
 			frame_loop = 0;
 	}
 	
@@ -349,7 +497,7 @@ void mouse(int button, int state, int x, int y){
 		mouse_flag = TRUE;
 	}else if(button == GLUT_LEFT_BUTTON && state == GLUT_UP){
 		frame_loop+=1;
-		if(frame_loop == 4){
+		if(frame_loop == 5){
 			frame_loop = 0;
 		}
 		mouse_flag = FALSE;
