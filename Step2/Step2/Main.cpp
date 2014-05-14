@@ -13,6 +13,12 @@
 
 using namespace std;
 
+VBO *vbo = new VBO;
+// ~ Additional information Update ¿¹Á¤
+int mouse_flag = FALSE;
+int width = 300, height = 400;
+
+// ~ Function
 void DrawTopVBO();
 void DrawDownVBO();
 void display();
@@ -21,14 +27,6 @@ void reshape(int w, int h);
 void mouse(int button, int state, int x, int y);
 void mousewheel(int wheel, int direction, int x, int y);
 void dragAndDrop(int x, int y);
-
-GLdouble aspect = 3.0f/4.0f;
-
-float scale = 1.0f;
-int mouse_flag = FALSE;
-int width = 300, height = 400;
-
-VBO *vbo = new VBO;
 
 int main(int argc, char* argv[])
 {
@@ -65,7 +63,6 @@ GLfloat topAngle;
 GLfloat downAngle;
 
 int frame_loop = 0;
-
 int topLoop = 0;
 int downLoop = 0;
 
@@ -145,7 +142,6 @@ void mouse(int button, int state, int x, int y){
 			downAngle = 0.0f;
 		}
 		mouse_flag = FALSE;
-		scale = 1.0f;
 		glutTimerFunc(15, effect, 0);
 	}
 }
@@ -226,11 +222,9 @@ void effect(int values){
 	}
 }
 
-
 void dragAndDrop(int x, int y){
 
 }
-
 
 void DrawTopVBO(){
 	// ~ Draw Top
