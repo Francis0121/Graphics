@@ -151,12 +151,18 @@ void mouse(int button, int state, int x, int y){
 }
 
 void mousewheel(int wheel, int direction, int x, int y){
+
 	if(direction < 0){
 		orthoHeight*=1.1;
 		orthoWidth*=1.1;		
 	}else if(direction > 0){
 		orthoHeight*=0.9;
 		orthoWidth*=0.9;
+	}
+	
+	if( orthoHeight > 4 ){
+		orthoHeight = 4;
+		orthoWidth = 3;
 	}
 	
 	glutPostRedisplay();
