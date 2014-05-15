@@ -3,6 +3,12 @@
 #include <gl/freeglut.h>
 
 typedef struct {
+	GLdouble posX;
+	GLdouble posY;
+	GLdouble posZ;
+} Position;
+
+typedef struct {
 	GLubyte *order;
 	int size;
 } Index;

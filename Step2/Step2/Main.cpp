@@ -13,10 +13,8 @@
 
 using namespace std;
 
-VBO *vbo = new VBO;
-// ~ Additional information Update 예정
-int mouse_flag = FALSE;
-int width = 300, height = 400;
+VBO *vbo = new VBO; // Vertex Buffer Object 생성
+int width = 300, height = 400; // 화면 크기 지정 shape 이용
 
 // ~ Function
 void DrawTopVBO();
@@ -25,15 +23,17 @@ void display();
 void effect(int values);
 void reshape(int w, int h);
 void mouse(int button, int state, int x, int y);
-void mousewheel(int wheel, int direction, int x, int y);
-void dragAndDrop(int x, int y);
+void mouseWheel(int wheel, int direction, int x, int y);
+void mouseMotion(int x, int y);
+// ~ Test
+Position getPosition(int x, int y);
 
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
 	glutInitWindowSize(width, height);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);
-	glutCreateWindow("Frame");
+	glutCreateWindow("Assignment2");
 	
 	if( glewInit() != GLEW_OK ) {
 		std::cout << "GLEW faild to init. :-(" << std::endl;
@@ -44,8 +44,8 @@ int main(int argc, char* argv[])
 
 	glutReshapeFunc(reshape);
 	glutMouseFunc(mouse);
-	glutMouseWheelFunc(mousewheel);
-	glutMotionFunc(dragAndDrop);
+	glutMouseWheelFunc(mouseWheel);
+	glutMotionFunc(mouseMotion);
 	glutDisplayFunc(display);
 	glutMainLoop();
 	
@@ -53,18 +53,32 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+void init(){
+}
+
 // 확대 축소 Variable
 GLdouble orthoWidth = 3.0;
 GLdouble orthoHeight = 4.0;
 
+// 책장넘김 효과 관련 Variable
 int isTop = STOP;
 int isDown = STOP;
 GLfloat topAngle;
 GLfloat downAngle;
 
+// Frame 선택 Variable
 int frame_loop = 0;
 int topLoop = 0;
 int downLoop = 0;
+
+// 화면 이동 Variable
+GLdouble eyeX = 0.0f;
+GLdouble eyeY = 0.0f;
+GLdouble centerX = 0.0f;
+GLdouble centerY = 0.0f;
+// 확대가 되었으면 frame 넘김효과 제한
+int mouseFlag = FALSE;
+int scaleFlag = FALSE;
 
 void display() { 
 
@@ -82,8 +96,8 @@ void display() {
 
 	glMatrixMode(GL_MODELVIEW); 
 	glLoadIdentity(); 
-	gluLookAt(	0.0f, 0.0f, 4.0f,
-				0.0f, 0.0f, 0.0f,
+	gluLookAt(	eyeX, eyeY, 4.0f,
+				centerX, centerY, 0.0f,
 				0.0f, 1.0f, 0.0f);
 	
 	topLoop = frame_loop;
@@ -97,9 +111,6 @@ void display() {
 		if(isTop && i == 0){
 			glRotatef(topAngle, 1.0f, 0.0f, 0.0f);
 		}
-		if(mouse_flag && i == 0){
-		
-		}
 		DrawTopVBO();
 		glPopMatrix();
 		if(++topLoop == 5)
@@ -110,9 +121,6 @@ void display() {
 		glTranslatef(0, 0, (GLfloat)-i*5);
 		if(isDown && i == 0){
 			glRotatef(downAngle, 1.0f, 0.0f, 0.0f);
-		}
-		if(mouse_flag && i == 0){
-		
 		}
 		DrawDownVBO();
 		glPopMatrix();
@@ -132,22 +140,24 @@ void reshape(int w, int h){
 
 void mouse(int button, int state, int x, int y){
 	if(button == GLUT_LEFT_BUTTON && state==GLUT_DOWN){
-		mouse_flag = TRUE;
+		mouseFlag = TRUE;
 	}else if(button == GLUT_LEFT_BUTTON && state == GLUT_UP){
-		if( height/2 > y){
-			isTop = DOWN;
-			topAngle = 0.0f;
-		}else{
-			isDown = DOWN;
-			downAngle = 0.0f;
+		if(!scaleFlag){ // 확대가 되지 않은 상태에서만 책장 넘김 효과가 발생한다.
+			if( height/2 > y){ // 상단을 클릭 했을 때
+				isTop = DOWN;
+				topAngle = 0.0f;
+			}else{ // 하단을 클릭했을 때
+				isDown = DOWN;
+				downAngle = 0.0f;
+			}
+			glutTimerFunc(15, effect, 0);
 		}
-		mouse_flag = FALSE;
-		glutTimerFunc(15, effect, 0);
+		mouseFlag = FALSE;
 	}
 }
 
-void mousewheel(int wheel, int direction, int x, int y){
-
+void mouseWheel(int wheel, int direction, int x, int y){
+	scaleFlag = TRUE;
 	if(direction < 0){
 		orthoHeight*=1.1;
 		orthoWidth*=1.1;		
@@ -157,11 +167,43 @@ void mousewheel(int wheel, int direction, int x, int y){
 	}
 	
 	if( orthoHeight > 4 ){
+		scaleFlag = FALSE;
 		orthoHeight = 4;
 		orthoWidth = 3;
+		centerX = eyeX = 0;
+		centerY = eyeY = 0;
 	}
 	
 	glutPostRedisplay();
+}
+
+void mouseMotion(int x, int y){
+	if(scaleFlag && mouseFlag){
+		Position pos = getPosition(x,y);
+		cout << "Mouse : " << pos.posX << " , " << pos.posY << " , " << pos.posZ << endl;
+		centerX = pos.posX - centerX;
+		eyeX = pos.posX - eyeX;
+		centerY = pos.posY - centerY;
+		eyeY = pos.posY - eyeY;
+		glutPostRedisplay();
+	}
+}
+
+Position getPosition(int x, int y){
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY, winZ;
+	GLdouble posX, posY, posZ;
+	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+	glGetDoublev( GL_PROJECTION_MATRIX, projection );
+	glGetIntegerv( GL_VIEWPORT, viewport );
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+	glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+	gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+	Position pos = { posX, posY, posZ };
+	return pos;
 }
 
 void effect(int values){
@@ -178,16 +220,16 @@ void effect(int values){
 				frame_loop = 0;
 		}
 		glutPostRedisplay();
-		glutTimerFunc(15, effect, 0);
+		glutTimerFunc(20, effect, 0);
 	}else if(isTop == UP){
 		if(topAngle > 45 ){
 			topAngle -= 8.0f;
 			glutPostRedisplay();
-			glutTimerFunc(15, effect, 0);
+			glutTimerFunc(20, effect, 0);
 		}else if(topAngle > 0){
 			topAngle -= 5.0f;
 			glutPostRedisplay();
-			glutTimerFunc(15, effect, 0);
+			glutTimerFunc(20, effect, 0);
 		}else{
 			isTop = STOP;
 			glutPostRedisplay();
@@ -205,16 +247,16 @@ void effect(int values){
 				frame_loop = 4;
 		}
 		glutPostRedisplay();
-		glutTimerFunc(15, effect, 0);
+		glutTimerFunc(20, effect, 0);
 	}else if(isDown == UP){
 		if(downAngle > 45 ){
 			downAngle -= 8.0f;
 			glutPostRedisplay();
-			glutTimerFunc(15, effect, 0);
+			glutTimerFunc(20, effect, 0);
 		}else if(downAngle > 0){
 			downAngle -= 5.0f;	
 			glutPostRedisplay();
-			glutTimerFunc(15, effect, 0);
+			glutTimerFunc(20, effect, 0);
 		}else{
 			isDown = STOP;
 			glutPostRedisplay();
@@ -222,12 +264,7 @@ void effect(int values){
 	}
 }
 
-void dragAndDrop(int x, int y){
-
-}
-
 void DrawTopVBO(){
-	// ~ Draw Top
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[0]); 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->tiVBO[topLoop]); 
 	
@@ -247,9 +284,6 @@ void DrawTopVBO(){
 }
 
 void DrawDownVBO(){
-
-	// ~ Draw Bottom
-
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[1]); 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->diVBO[downLoop]); 
 	
