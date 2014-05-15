@@ -26,7 +26,7 @@ void mouse(int button, int state, int x, int y);
 void mouseWheel(int wheel, int direction, int x, int y);
 void mouseMotion(int x, int y);
 // ~ Test
-Position getPosition(int x, int y);
+void getPosition(int x, int y);
 
 int main(int argc, char* argv[])
 {
@@ -72,13 +72,16 @@ int topLoop = 0;
 int downLoop = 0;
 
 // 화면 이동 Variable
-GLdouble eyeX = 0.0f;
-GLdouble eyeY = 0.0f;
-GLdouble centerX = 0.0f;
-GLdouble centerY = 0.0f;
+GLdouble lookX = 0.0f;
+GLdouble lookY = 0.0f;
+
 // 확대가 되었으면 frame 넘김효과 제한
 int mouseFlag = FALSE;
 int scaleFlag = FALSE;
+
+// 이동시 전 Pos 후 Pos
+GLdouble bPosX, bPosY;
+GLdouble posX, posY, posZ;
 
 void display() { 
 
@@ -96,8 +99,8 @@ void display() {
 
 	glMatrixMode(GL_MODELVIEW); 
 	glLoadIdentity(); 
-	gluLookAt(	eyeX, eyeY, 4.0f,
-				centerX, centerY, 0.0f,
+	gluLookAt(	lookX, lookY, 4.0f,
+				lookX, lookY, 0.0f,
 				0.0f, 1.0f, 0.0f);
 	
 	topLoop = frame_loop;
@@ -170,8 +173,8 @@ void mouseWheel(int wheel, int direction, int x, int y){
 		scaleFlag = FALSE;
 		orthoHeight = 4;
 		orthoWidth = 3;
-		centerX = eyeX = 0;
-		centerY = eyeY = 0;
+		lookX = 0.0f;
+		lookY = 0.0f;
 	}
 	
 	glutPostRedisplay();
@@ -179,22 +182,33 @@ void mouseWheel(int wheel, int direction, int x, int y){
 
 void mouseMotion(int x, int y){
 	if(scaleFlag && mouseFlag){
-		Position pos = getPosition(x,y);
-		cout << "Mouse : " << pos.posX << " , " << pos.posY << " , " << pos.posZ << endl;
-		centerX = pos.posX - centerX;
-		eyeX = pos.posX - eyeX;
-		centerY = pos.posY - centerY;
-		eyeY = pos.posY - eyeY;
+		getPosition(x,y);
+
+		if(bPosX < posX){ // 감소하고 있는중
+			lookX-=0.03f;
+		}else{
+			lookX+=0.03f;
+		}
+
+		if(bPosY < posY){
+			lookY-=0.03f;
+		}else{
+			lookY+=0.03f;
+		}
+
+		bPosX = posX;
+		bPosY = posY;
+
 		glutPostRedisplay();
 	}
 }
 
-Position getPosition(int x, int y){
+void getPosition(int x, int y){
 	GLint viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
 	GLfloat winX, winY, winZ;
-	GLdouble posX, posY, posZ;
+	
 	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
 	glGetDoublev( GL_PROJECTION_MATRIX, projection );
 	glGetIntegerv( GL_VIEWPORT, viewport );
@@ -202,8 +216,6 @@ Position getPosition(int x, int y){
 	winY = (float)viewport[3] - (float)y;
 	glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
 	gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-	Position pos = { posX, posY, posZ };
-	return pos;
 }
 
 void effect(int values){
