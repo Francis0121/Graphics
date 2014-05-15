@@ -244,22 +244,6 @@ void DrawTopVBO(){
 
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-
-	// ~ Draw Top Line
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[2]); 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->tiVBO[5]); 
-		
-	glEnableClientState(GL_VERTEX_ARRAY); 
-	glEnableClientState(GL_COLOR_ARRAY);
-		
-	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
-	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
-
-	glDrawElements(GL_LINES, vbo->tIndecies[5].size, GL_UNSIGNED_BYTE, (char*) NULL+0);
-	glLineWidth(2.0f);
-
-	glDisableClientState(GL_VERTEX_ARRAY); 
-	glDisableClientState(GL_COLOR_ARRAY);
 }
 
 void DrawDownVBO(){
@@ -282,21 +266,4 @@ void DrawDownVBO(){
 
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-
-	// ~ Draw Bottom Line
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[2]); 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->diVBO[5]); 
-		
-	glEnableClientState(GL_VERTEX_ARRAY); 
-	glEnableClientState(GL_COLOR_ARRAY);
-		
-	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
-	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
-
-	glDrawElements(GL_LINES, vbo->dIndecies[5].size, GL_UNSIGNED_BYTE, (char*) NULL+0);
-	glLineWidth(2.0f);
-
-	glDisableClientState(GL_VERTEX_ARRAY); 
-	glDisableClientState(GL_COLOR_ARRAY);
 }
