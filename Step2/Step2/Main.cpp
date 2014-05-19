@@ -83,6 +83,8 @@ int scaleFlag = FALSE;
 GLdouble bPosX, bPosY;
 GLdouble posX, posY, posZ;
 
+GLfloat motionRate = 0.03f;
+
 void display() { 
 
 	glEnable(GL_DEPTH_TEST);
@@ -161,12 +163,20 @@ void mouse(int button, int state, int x, int y){
 
 void mouseWheel(int wheel, int direction, int x, int y){
 	scaleFlag = TRUE;
-	if(direction < 0){
+	if(direction < 0){		
 		orthoHeight*=1.1;
-		orthoWidth*=1.1;		
+		orthoWidth*=1.1;
+		if(motionRate < 0.03f){
+			motionRate += 0.005f;
+		}
 	}else if(direction > 0){
-		orthoHeight*=0.9;
-		orthoWidth*=0.9;
+		if(orthoHeight > 0.5){
+			orthoHeight*=0.9;
+			orthoWidth*=0.9;
+		}
+		if(motionRate > 0.005f){
+			motionRate -= 0.005f;
+		}
 	}
 	
 	if( orthoHeight > 4 ){
@@ -180,20 +190,22 @@ void mouseWheel(int wheel, int direction, int x, int y){
 	glutPostRedisplay();
 }
 
+
+
 void mouseMotion(int x, int y){
 	if(scaleFlag && mouseFlag){
 		getPosition(x,y);
 
 		if(bPosX < posX){ // 감소하고 있는중
-			lookX-=0.03f;
+			lookX-=motionRate;
 		}else{
-			lookX+=0.03f;
+			lookX+=motionRate;
 		}
 
 		if(bPosY < posY){
-			lookY-=0.03f;
+			lookY-=motionRate;
 		}else{
-			lookY+=0.03f;
+			lookY+=motionRate;
 		}
 
 		bPosX = posX;
