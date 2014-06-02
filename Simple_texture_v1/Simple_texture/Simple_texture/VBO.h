@@ -7,6 +7,11 @@ typedef struct {
 	int size;
 } Index;
 
+typedef struct {
+	GLfloat *order;
+	int size;
+} Texture;
+
 typedef struct { 
 	float location[3]; 
 	float color[4]; 
@@ -22,11 +27,13 @@ public:
 	Vertex lVertex[20]; // Line Vertex
 	Index tIndecies[6]; // Top Indeices
 	Index dIndecies[6]; // Down Indeices
+	Texture texture[5]; // Texture
 
 	// GL Buffer
 	GLuint vacVBO[3]; // Vertex And Color Vertex Buffer Object
 	GLuint tiVBO[6]; // top index Vertex Buffer Object
 	GLuint diVBO[6]; // down index Vertex Buffer Object
+	GLuint texVBO[5]; // Texture index Vertex Buffer Object
 // ~ Function
 public:
 	VBO(void);

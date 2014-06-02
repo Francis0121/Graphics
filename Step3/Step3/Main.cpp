@@ -54,17 +54,27 @@ int main(int argc, char* argv[])
 }
 
 unsigned int tex_id;
+float texcoord[] = {
+		// Top
+		0,1, 1,1, 1,0, 0,0,
+		0,1, 1,1, 1,0, 0,0,
+		0,1, 1,1, 1,0, 0,0,
+		0,1, 1,1, 1,0, 0,0,
+		0,1, 1,1, 1,0, 0,0
+};
+GLuint mTexcoodBuffer[1];
 
 void init(){
 	//texture->LoadTexture();
+	glGenBuffers(1, mTexcoodBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, mTexcoodBuffer[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texcoord), texcoord, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	tex_id = SOIL_load_OGL_texture("img_cheryl.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
-
 	glBindTexture(GL_TEXTURE_2D, tex_id);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 
 // 확대 축소 Variable
@@ -122,7 +132,7 @@ void display() {
 	topLoop = frame_loop;
 	downLoop = frame_loop;
 
-	for(int i=0; i<5; i++){
+	for(int i=0; i<1; i++){
 
 		// ~ Top
 		glPushMatrix();
@@ -147,7 +157,7 @@ void display() {
 			downLoop = 4;
 	}
 	
-	glFlush(); 
+	glutSwapBuffers();
 }
 
 void reshape(int w, int h){
@@ -303,32 +313,28 @@ void effect(int values){
 }
 
 void DrawTopVBO(){
-	float texcoords[] = {
-		// Top
-		1,1, 1,0, 0,0, 0,1,
-		// Horizinatal
-		1,1, 1,0, 0,0, 0,1
-};
 	// ~ 추가
 	glBindTexture(GL_TEXTURE_2D, tex_id);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[0]); 
-	
+	 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	//glEnableClientState(GL_COLOR_ARRAY);
-	// ~ 추가
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	
-	//glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[0]); 
 	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
-	// ~ 추가
-	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 	
+	glBindBuffer(GL_ARRAY_BUFFER, mTexcoodBuffer[0]); // 추가
+	glTexCoordPointer(2, GL_FLOAT, 0, 0);
+	
+	//glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[0]);
+	//glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->tiVBO[topLoop]);
 	glDrawElements(GL_TRIANGLES, vbo->tIndecies[topLoop].size, GL_UNSIGNED_BYTE, (char*) NULL+0); 
 	
-	glDisableClientState(GL_VERTEX_ARRAY); 
-	//glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY); 
 
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
