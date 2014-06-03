@@ -82,13 +82,27 @@
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="IU\IU_01.jpg" />
-    <None Include="IU\IU_02.jpg" />
-    <None Include="IU\IU_03.jpg" />
-    <None Include="IU\IU_04.jpg" />
-    <None Include="IU\IU_05.jpg" />
-    <None Include="IU\IU_06.jpg" />
-    <None Include="IU\IU_07.jpg" />
+    <None Include="IU\IU_0.jpg" />
+    <None Include="IU\IU_1.jpg" />
+    <None Include="IU\IU_10.jpg" />
+    <None Include="IU\IU_11.jpg" />
+    <None Include="IU\IU_12.jpg" />
+    <None Include="IU\IU_13.jpg" />
+    <None Include="IU\IU_14.jpg" />
+    <None Include="IU\IU_15.jpg" />
+    <None Include="IU\IU_16.jpg" />
+    <None Include="IU\IU_17.jpg" />
+    <None Include="IU\IU_18.jpg" />
+    <None Include="IU\IU_19.jpg" />
+    <None Include="IU\IU_2.jpg" />
+    <None Include="IU\IU_20.jpg" />
+    <None Include="IU\IU_3.jpg" />
+    <None Include="IU\IU_4.jpg" />
+    <None Include="IU\IU_5.jpg" />
+    <None Include="IU\IU_6.jpg" />
+    <None Include="IU\IU_7.jpg" />
+    <None Include="IU\IU_8.jpg" />
+    <None Include="IU\IU_9.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

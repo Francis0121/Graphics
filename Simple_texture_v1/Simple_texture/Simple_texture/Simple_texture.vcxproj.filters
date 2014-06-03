@@ -31,25 +31,67 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="IU\IU_01.jpg">
+    <None Include="IU\IU_1.jpg">
       <Filter>Resource Files\IU</Filter>
     </None>
-    <None Include="IU\IU_02.jpg">
+    <None Include="IU\IU_2.jpg">
       <Filter>Resource Files\IU</Filter>
     </None>
-    <None Include="IU\IU_03.jpg">
+    <None Include="IU\IU_3.jpg">
       <Filter>Resource Files\IU</Filter>
     </None>
-    <None Include="IU\IU_04.jpg">
+    <None Include="IU\IU_4.jpg">
       <Filter>Resource Files\IU</Filter>
     </None>
-    <None Include="IU\IU_05.jpg">
+    <None Include="IU\IU_5.jpg">
       <Filter>Resource Files\IU</Filter>
     </None>
-    <None Include="IU\IU_06.jpg">
+    <None Include="IU\IU_6.jpg">
       <Filter>Resource Files\IU</Filter>
     </None>
-    <None Include="IU\IU_07.jpg">
+    <None Include="IU\IU_7.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_8.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_9.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_10.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_11.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_12.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_13.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_14.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_15.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_16.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_17.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_18.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_19.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_20.jpg">
+      <Filter>Resource Files\IU</Filter>
+    </None>
+    <None Include="IU\IU_0.jpg">
       <Filter>Resource Files\IU</Filter>
     </None>
   </ItemGroup>

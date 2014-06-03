@@ -21,26 +21,21 @@ void onMouse(int button, int state, int x, int y);
 void onMouseWheel(int wheel, int direction, int x, int y);
 void onMouseMotion(int x, int y);
 void onEffect(int values);
+void onXdecrease(int values);
+void onXincrease(int values);
+void onYdecrease(int values);
+void onYincrease(int values);
+void onFloatingRestart(int values);
 
 // ~ Function
 void idle();
 void getPosition(int x, int y);
-void initGraphics();
 int LoadGLTexture();
 void DrawTopVBO();
 void DrawDownVBO();
 
 // ~ Texture Mapping
-#define TEXTURE_ID_SIZE 7
-
-GLfloat texcoord[] = {
-	// front
-	0, 1,  1, 1,  1, 0,  0, 0,
-	// back
-	0, 1,  1, 1,  1, 0,  0, 0
-};
-
-GLuint mTexcoodBuffer;
+#define TEXTURE_ID_SIZE 10
 GLuint texture_id[TEXTURE_ID_SIZE];
 
 // 확대 축소 Variable
@@ -72,6 +67,9 @@ GLdouble posX, posY, posZ;
 
 GLfloat motionRate = 0.03f;
 
+// Floating
+int floatingFlag = TRUE;
+
 void main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -82,21 +80,109 @@ void main(int argc, char* argv[])
 	if(glewInit() != GLEW_OK) {
 		std::cout << "GLEW init is failed" << std::endl;
 	}
-	
+
 	vbo->InitGeometry();
 	vbo->InitVBO();
+	vbo->InitTexture();
 
-	initGraphics();
+	LoadGLTexture();
 	glutMouseFunc(onMouse);
 	glutMotionFunc(onMouseMotion);
 	glutMouseWheelFunc(onMouseWheel);
 	glutDisplayFunc(onDisplay);
 	glutReshapeFunc(onResize);
 	glutIdleFunc(idle);
+	glutTimerFunc(3000, onXdecrease, 0);
+	glutTimerFunc(3000, onYincrease, 0);
 
 	glutMainLoop();
 
 	delete vbo;
+}
+
+
+void onFloatingRestart(int values){
+	floatingFlag = TRUE;
+
+	glutTimerFunc(10, onXdecrease, 0);
+	glutTimerFunc(10, onYincrease, 0);
+}
+
+void onXdecrease(int values){
+	if(scaleFlag){
+		return;
+	}
+	vbo->xMin -= 0.001f;
+	vbo->xMax -= 0.001f;
+
+	vbo->InitTexture();
+
+	glutSwapBuffers();
+	if(floatingFlag){
+		if(vbo->xMin < 0.05f ){
+			glutTimerFunc(1000, onXincrease, 0);
+		}else{
+			glutTimerFunc(25, onXdecrease, 0);
+		}
+	}
+}
+
+void onXincrease(int values){
+	if(scaleFlag){
+		return;
+	}
+	vbo->xMin += 0.001f;
+	vbo->xMax += 0.001f;
+
+	vbo->InitTexture();
+
+	glutSwapBuffers();
+	
+	if(floatingFlag){
+		if(vbo->xMax > 0.95f ){
+			glutTimerFunc(1000, onXdecrease, 0);
+		}else{
+			glutTimerFunc(25, onXincrease, 0);
+		}
+	}
+}
+
+void onYdecrease(int values){
+	if(scaleFlag){
+		return;
+	}
+	vbo->yMin -= 0.001f;
+	vbo->yMax -= 0.001f;
+
+	vbo->InitTexture();
+
+	glutSwapBuffers();
+	if(floatingFlag){
+		if(vbo->yMin < 0.05f ){
+			glutTimerFunc(1000, onYincrease, 0);
+		}else{
+			glutTimerFunc(25, onYdecrease, 0);
+		}
+	}
+}
+
+void onYincrease(int values){
+	if(scaleFlag){
+		return;
+	}
+	vbo->yMin += 0.001f;
+	vbo->yMax += 0.001f;
+
+	vbo->InitTexture();
+
+	glutSwapBuffers();
+	if(floatingFlag){
+		if(vbo->yMax > 0.95f ){
+			glutTimerFunc(1000, onYdecrease, 0);
+		}else{
+			glutTimerFunc(25, onYincrease, 0);
+		}
+	}
 }
 
 void getPosition(int x, int y){
@@ -124,7 +210,7 @@ void onDisplay()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(-orthoWidth, orthoWidth, -orthoHeight, orthoHeight, 0.1, 100.0);
+	glOrtho(-orthoWidth-0.1, orthoWidth+0.1, -orthoHeight, orthoHeight+0.2, 0.1, 100.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -143,6 +229,7 @@ void onDisplay()
 		if(isTop && i == 0){
 			glRotatef(topAngle, 1.0f, 0.0f, 0.0f);
 		}
+		
 		DrawTopVBO();
 		glPopMatrix();
 		if(++topLoop == 5)
@@ -154,76 +241,102 @@ void onDisplay()
 		if(isDown && i == 0){
 			glRotatef(downAngle, 1.0f, 0.0f, 0.0f);
 		}
+	
 		DrawDownVBO();
 		glPopMatrix();
 		if(--downLoop  == -1)
 			downLoop = 4;
 	}
-
 	glutSwapBuffers();
 }
 
 void DrawTopVBO(){
-	glBindTexture(GL_TEXTURE_2D, texture_id[0]);
-	
+
+	int indexSize = vbo->tIndecies[topLoop].size;
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[0]); 
-	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[0]);
-	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->texVBO[topLoop]);
-	glTexCoordPointer(2, GL_FLOAT, 0, (char*) NULL+0);
+	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+(sizeof(GLfloat)*3)); 
+	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+0); 
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->tiVBO[topLoop]);
-	glDrawElements(GL_TRIANGLES, vbo->tIndecies[topLoop].size, GL_UNSIGNED_BYTE, (char*) NULL+0); 
+	glDrawElements(GL_TRIANGLES, indexSize/2, GL_UNSIGNED_BYTE, (char*)NULL+(indexSize/2)); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY); 
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+	for(int i = 0; i<(indexSize/12); i++){
+		glBindTexture(GL_TEXTURE_2D, texture_id[i+topLoop]);
+	
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[0]); 
+		glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo->texVBO[topLoop]);
+		glTexCoordPointer(2, GL_FLOAT, 0, (char*) NULL+0);
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->tiVBO[topLoop]);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (char*) NULL+(i*6)); 
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+		glDisableClientState(GL_VERTEX_ARRAY); 
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
 }
 
 void DrawDownVBO(){
-	glBindTexture(GL_TEXTURE_2D, texture_id[1]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[1]); 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->diVBO[downLoop]); 
-	
+	int indexSize = vbo->dIndecies[4-downLoop].size;
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[1]); 
-	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-	
+
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[1]);
-	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 12); 
+	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (char*) NULL+(sizeof(GLfloat)*3)); 
+	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+0); 
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, mTexcoodBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->texVBO[downLoop]);
-	glTexCoordPointer(2, GL_FLOAT, 0, 0);
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-	
-	glDrawElements(GL_TRIANGLES, vbo->dIndecies[downLoop].size, GL_UNSIGNED_BYTE, (char*) NULL+0); 
-	
-	glDisableClientState(GL_VERTEX_ARRAY); 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->diVBO[4-downLoop]);
+	glDrawElements(GL_TRIANGLES, indexSize/2, GL_UNSIGNED_BYTE, (char*) NULL+(sizeof(GLubyte) * indexSize/2)); 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY); 
+
+	for(int i = 0; i<(indexSize/12); i++){
+		glBindTexture(GL_TEXTURE_2D, texture_id[TEXTURE_ID_SIZE-(i+1+downLoop)]);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[1]); 
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->diVBO[4-downLoop]); 
+	
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	
+		glBindBuffer(GL_ARRAY_BUFFER, vbo->vacVBO[1]); 
+		glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (char*) NULL+ 0); 
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo->texVBO[4-downLoop]);
+		glTexCoordPointer(2, GL_FLOAT, 0, (char*) NULL+0);
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+	
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->diVBO[4-downLoop]);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (char*) NULL+(i*6)); 
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+	
+		glDisableClientState(GL_VERTEX_ARRAY); 
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+	
+	
 }
 
 void onResize(int w, int h)
@@ -241,25 +354,9 @@ void idle()
 	glutPostRedisplay();
 }
 
-void initGraphics()
-{
-	GLuint buffers[3];
-	glGenBuffers(3, &buffers[0]);
-
-	mTexcoodBuffer = buffers[1];
-
-	// Create a color buffer & transfer color data 
-	// from client space to server space.
-	glBindBuffer(GL_ARRAY_BUFFER, mTexcoodBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(texcoord), texcoord, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	LoadGLTexture();
-}
-
 int LoadGLTexture()
 {
-	char fileNameFormat[] = "IU/IU_0%d.jpg";
+	char fileNameFormat[] = "IU/IU_%d.jpg";
 
 	for(int i=0; i < TEXTURE_ID_SIZE; i++){
 		char fileName[100];
@@ -295,8 +392,17 @@ void onMouse(int button, int state, int x, int y){
 			glutTimerFunc(15, onEffect, 0);
 		}
 		mouseFlag = FALSE;
-		std::cout << "TopLoop " << topLoop << std::endl;
-		std::cout << "DownLoop " << downLoop << std::endl;
+		if(floatingFlag){
+			
+			vbo->xMax = 0.8f;
+			vbo->yMax = 0.9f;
+			vbo->xMin = 0.2f;
+			vbo->yMin = 0.3f;
+			vbo->InitTexture();
+
+			floatingFlag = FALSE;
+			glutTimerFunc(3000, onFloatingRestart, 0);
+		}
 	}
 }
 

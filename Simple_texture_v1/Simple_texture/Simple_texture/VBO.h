@@ -1,6 +1,7 @@
 #pragma once
 #include <gl/glew.h>
 #include <gl/freeglut.h>
+#include <iostream>
 
 typedef struct {
 	GLubyte *order;
@@ -22,23 +23,28 @@ class VBO
 // ~ Variable
 public:
 	// Vertex & Color
-	Vertex tVertex[48]; // Top Vertex
-	Vertex dVertex[48]; // Down Vertex
-	Vertex lVertex[20]; // Line Vertex
-	Index tIndecies[6]; // Top Indeices
-	Index dIndecies[6]; // Down Indeices
+	Vertex tVertex[20]; // Top Vertex
+	Vertex dVertex[20]; // Down Vertex
+	Index tIndecies[5]; // Top Indeices
+	Index dIndecies[5]; // Down Indeices
 	Texture texture[5]; // Texture
 
 	// GL Buffer
-	GLuint vacVBO[3]; // Vertex And Color Vertex Buffer Object
-	GLuint tiVBO[6]; // top index Vertex Buffer Object
-	GLuint diVBO[6]; // down index Vertex Buffer Object
+	GLuint vacVBO[2]; // Vertex And Color Vertex Buffer Object
+	GLuint tiVBO[5]; // top index Vertex Buffer Object
+	GLuint diVBO[5]; // down index Vertex Buffer Object
 	GLuint texVBO[5]; // Texture index Vertex Buffer Object
+
+	GLfloat xMax;
+	GLfloat xMin;
+	GLfloat yMax;
+	GLfloat yMin;
 // ~ Function
 public:
 	VBO(void);
 	~VBO(void);
 	void InitGeometry();
 	void InitVBO();
+	void InitTexture();
 };
 
