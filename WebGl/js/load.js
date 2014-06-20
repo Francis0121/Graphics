@@ -63,8 +63,8 @@ webgl.drawScreen = function(){
 	
     gl.useProgram(shaderProgram);
     
-    mat4.perspective(projection_matrix, 45, 1.0, 0.1, 100.0);		
-	mat4.lookAt(view_matrix, [0, 0, 1], [0, 0, 0], [0, 1, 0]);
+    mat4.ortho(projection_matrix, -3.0, 3.0, -4.0, 4.0, 0.1, 100.0);		
+	mat4.lookAt(view_matrix, [0, 0, 4], [0, 0, 0], [0, 1, 0]);
     mat4.identity(model_matrix);
     
     mat4.multiply(view_model_matrix, view_matrix, model_matrix);
@@ -73,12 +73,12 @@ webgl.drawScreen = function(){
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer.cubeVertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.cubeVertexTextureCoordBuffer);
+    /*gl.bindBuffer(gl.ARRAY_BUFFER, buffer.cubeVertexTextureCoordBuffer);
     gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture_id);
-    gl.uniform1i(shaderProgram.texid_loc, 0);
+    gl.uniform1i(shaderProgram.texid_loc, 0);*/
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.cubeVertexIndexBuffer);
    
