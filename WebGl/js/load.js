@@ -32,8 +32,11 @@ webgl.webGLStart = function(){
     	tLoop : 0, // Top Loop
     	dLoop : 0, // Down Loop
     	fLoop : 0, // Frame Loop
+    	// Screen Size
+    	scaleFlag : false,
     	orthoWidth : 3.0, 
-    	orthoHeight : 4.0
+    	orthoHeight : 4.0,
+    	motionRate : 0.03
     };
     setTimeout(webgl.drawScreen, 100);
 };
@@ -57,8 +60,8 @@ webgl.init = function(){
 	
 	canvas.onmousedown = webgl.handleMouseDown;
 	canvas.onmouseup = webgl.handleMouseUp;
+	canvas.onmousewheel = webgl.handleMouseWheel;
 //	canvas.onmousemove = webgl.handleMouseMove;
-//	canvas.onmousewheel = webgl.handleMouseWheel;
 	
 	webgl.errorHandler('Create Canvas', 1);
 };
@@ -78,7 +81,7 @@ webgl.drawScreen = function(){
     // ~ Camera
 
     //mat4.perspective(projection_matrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);	
-    mat4.ortho(projection_matrix, -webgl.attribute.orthoWidth, webgl.attribute.orthoWidth, -webgl.attribute.orthoHeight, webgl.attribute.orthoHeight, 0.1, 100.0);
+    mat4.ortho(projection_matrix, -webgl.attribute.orthoWidth-0.1, webgl.attribute.orthoWidth+0.1, -webgl.attribute.orthoHeight, webgl.attribute.orthoHeight+0.2, 0.1, 100.0);
 	mat4.lookAt(view_matrix, [0, 0, 1], [0, 0, 0], [0, 1, 0]);
     mat4.identity(model_matrix);
     
