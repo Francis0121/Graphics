@@ -6,7 +6,7 @@
 .wrapper_background>footer{ width: 300px; margin: 25px 50px; }
 .wrapper_background>footer>span{ font-size: 75%; }
 
-.error{ width: 280px; margin: 0px auto 25px auto; height: 180px; overflow-x: hidden; overflow-y: scroll; border: 1px solid #808080; padding: 10px; font-size: 75%; line-height: 1.5;}
+.error{ width: 280px; margin: 0px auto 25px auto; height: 180px; overflow: scroll; border: 1px solid #808080; padding: 10px; font-size: 75%; line-height: 1.5;}
 .error>span.info>span.head{ color: blue; margin-right: 5px;}
 .error>span.debug>span.head{ color: red; margin-right: 5px;}
 .error>span.default>span.head{ color: navy; margin-right: 5px;}

@@ -41,9 +41,7 @@ shader.getShader = function(gl, id) {
  */
 shader.initShader = function(){
 	var gl = webgl.gl;
-
-	webgl.shaderProgram = gl.createProgram();
-	var shaderProgram = webgl.shaderProgram;
+	var shaderProgram = gl.createProgram();
 	
 	var fragmentShader = shader.getShader(gl, 'shader-fs');
     var vertexShader = shader.getShader(gl, 'shader-vs');
@@ -60,8 +58,13 @@ shader.initShader = function(){
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'a_vertex');
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
+    
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, 'a_texcoord');
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    
     shaderProgram.mvp_matrix_loc = gl.getUniformLocation(shaderProgram, 'mvp_matrix');
+    shaderProgram.texid_loc = gl.getUniformLocation(shaderProgram, 'uTexture');
 	
+    webgl.shaderProgram = shaderProgram;
 	webgl.errorHandler('Link Shader', 1);
 };

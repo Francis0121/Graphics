@@ -3,22 +3,30 @@
 <head>
 	<title>Flip Board</title>
 	<meta content="text/html; charset=UTF-8"/>
-	<!-- Style -->
-	<link rel="stylesheet" type="text/css" href="css/default.css">
-	<link rel="stylesheet" type="text/css" href="css/flipboard.css">
 	<!-- Shader -->
 	<script id="shader-vs" type="x-shader/x-vertex">
-    uniform mat4 mvp_matrix;
     attribute vec3 a_vertex;
+    attribute vec2 a_texcoord;
+
+    uniform mat4 mvp_matrix;
+
+    varying vec2 v_texcoord;
 
     void main(void) {
         gl_Position = mvp_matrix * vec4(a_vertex, 1.0);
-    }  	
+        v_texcoord = a_texcoord;
+    }
 	</script>
 	<script id="shader-fs" type="x-shader/x-fragment">
+	precision mediump float;
+
+    varying vec2 v_texcoord;
+
+    uniform sampler2D uTexture;
+
     void main(void) {
-        gl_FragColor = vec4(1, 0, 0, 1);
-    }	
+        gl_FragColor = texture2D(uTexture, v_texcoord);
+    }
 	</script>
 	<!-- JavaScript Matrix Plugin -->
 	<script type="text/javascript" src="js/webgl/webgl-utils.js"></script>
@@ -40,10 +48,13 @@
 	</script>
 	<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="js/shader.js"></script>
-	<script type="text/javascript" src="js/load.js"></script>
 	<script type="text/javascript" src="js/texture.js"></script>
 	<script type="text/javascript" src="js/buffer.js"></script>
 	<script type="text/javascript" src="js/eventHandler.js"></script>
+	<script type="text/javascript" src="js/load.js"></script>
+	<!-- Style -->
+	<link rel="stylesheet" type="text/css" href="css/default.css">
+	<link rel="stylesheet" type="text/css" href="css/flipboard.css">
 </head>
 
 <body>

@@ -25,3 +25,26 @@ webgl.errorHandler = function(error, mode){
 	span.append(message);
 	webgl.error.append(span).append('<br/>');
 };
+
+/**
+ * Mouse Down Event
+ */
+webgl.handleMouseDown = function(){
+	webgl.errorHandler('Mouse Down', 1);
+
+};
+
+/**
+ * Mouse Up Event
+ */
+webgl.handleMouseUp = function(){
+	if(webgl.attribute.fLoop < 4)
+		++webgl.attribute.fLoop;
+	else
+		webgl.attribute.fLoop = 0
+	//.else if(--webgl.attribute.fLoop == -1)
+	//	webgl.attribute.fLoop = 4;
+	
+	webgl.drawScreen();
+	webgl.errorHandler('Mouse Up ' + webgl.attribute.fLoop + ' ', 1);	
+};
