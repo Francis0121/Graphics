@@ -3,6 +3,7 @@ var view_matrix = mat4.create();
 var model_matrix = mat4.create();
 var view_model_matrix = mat4.create();
 var projection_view_model_matrix = mat4.create();
+var matStack = new Array();
 
 $(function() {
 	// ~ Javascript Debug Start
@@ -20,6 +21,12 @@ $(function() {
  * Web GL Start
  */
 webgl.webGLStart = function(){
+	 webgl.ROTATION_STATUS = {
+    	STOP : 0,
+    	DOWN : 1,
+    	UP : 2
+    };
+	 
 	webgl.init();
 	
 	shader.initShader();
@@ -32,13 +39,35 @@ webgl.webGLStart = function(){
     	tLoop : 0, // Top Loop
     	dLoop : 0, // Down Loop
     	fLoop : 0, // Frame Loop
+    	dragging : false,
     	// Screen Size
-    	scaleFlag : false,
+    	scaling : false,
     	orthoWidth : 3.0, 
     	orthoHeight : 4.0,
-    	motionRate : 0.03
+    	// Screen move
+    	motionRate : 0.03,
+    	lookX : 0.0,
+    	lookY : 0.0,
+    	bPosX : 0.0, // Before Position X 
+    	bPosY : 0.0,  // Before Position Y
+    	// Rotation
+    	isTop : webgl.ROTATION_STATUS.STOP,
+    	isDown : webgl.ROTATION_STATUS.STOP,
+    	topAngle : 0.0,
+    	downAngle : 0.0
     };
-    setTimeout(webgl.drawScreen, 100);
+    
+    webgl.animate();
+//	setTimeout(webgl.drawScreen, 100);
+};
+
+/**
+ * Animate
+ */
+webgl.animate = function(){
+	requestAnimFrame(webgl.animate);
+	webgl.rotationEffect();
+	webgl.drawScreen();
 };
 
 /**
@@ -61,7 +90,7 @@ webgl.init = function(){
 	canvas.onmousedown = webgl.handleMouseDown;
 	canvas.onmouseup = webgl.handleMouseUp;
 	canvas.onmousewheel = webgl.handleMouseWheel;
-//	canvas.onmousemove = webgl.handleMouseMove;
+	canvas.onmousemove = webgl.handleMouseMove;
 	
 	webgl.errorHandler('Create Canvas', 1);
 };
@@ -80,30 +109,64 @@ webgl.drawScreen = function(){
     
     // ~ Camera
 
-    //mat4.perspective(projection_matrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);	
-    mat4.ortho(projection_matrix, -webgl.attribute.orthoWidth-0.1, webgl.attribute.orthoWidth+0.1, -webgl.attribute.orthoHeight, webgl.attribute.orthoHeight+0.2, 0.1, 100.0);
-	mat4.lookAt(view_matrix, [0, 0, 1], [0, 0, 0], [0, 1, 0]);
-    mat4.identity(model_matrix);
+//    mat4.perspective(projection_matrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);	
+    mat4.identity(projection_matrix);
+    mat4.ortho(projection_matrix, 
+    		-webgl.attribute.orthoWidth-0.1, 
+    		webgl.attribute.orthoWidth+0.1, 
+    		-webgl.attribute.orthoHeight, 
+    		webgl.attribute.orthoHeight+0.2, 
+    		0.1, 100.0);
     
-    // ~ Matrix
+    mat4.identity(view_matrix);
+	mat4.lookAt(view_matrix, 
+			[webgl.attribute.lookX, webgl.attribute.lookY, 1], 
+			[webgl.attribute.lookX, webgl.attribute.lookY, 0], 
+			[0, 1, 0]);
+	
+    mat4.identity(model_matrix);
     
     mat4.multiply(view_model_matrix, view_matrix, model_matrix);
 	mat4.multiply(projection_view_model_matrix, projection_matrix, view_model_matrix);
-	
+    // ~ Matrix
+    
 	webgl.attribute.tLoop = webgl.attribute.fLoop;
 	webgl.attribute.dLoop = webgl.attribute.fLoop;
 	
 	for(var i=0; i<5; i++){
+//		// ~ Top
+//		matStack.push(model_matrix);
+//		
+//		if( webgl.attribute.isTop != webgl.ROTATION_STATUS.STOP && i == 0){
+//			mat4.rotateX(model_matrix, model_matrix, webgl.attribute.topAngle*Math.PI/180); 
+//		}
+//		mat4.translate(model_matrix, model_matrix, [0.0, 0.0, -5.0]);
+//		
 		webgl.drawTop(gl, shaderProgram);
 		if(++webgl.attribute.tLoop == 5)
 			webgl.attribute.tLoop = 0;
 		
+//		model_matrix = matStack.pop();
+		
+		// ~ Down
+		/*mat4.translate(model_matrix, model_matrix, [0.0, 0.0, -i*5]);
+		if(webgl.attribute.isDown){
+			mat4.rotate(model_matrix, model_matrix, webgl.attribute.downAngle*Math.PI/180, [1, 0, 0] );
+		}
+		mat4.multiply(view_model_matrix, view_matrix, model_matrix);
+		mat4.multiply(projection_view_model_matrix, projection_matrix, view_model_matrix);
+		*/
 		webgl.drawDown(gl, shaderProgram);
 		if(--webgl.attribute.dLoop == -1)
 			webgl.attribute.dLoop = 4;
+
 	}
 	
-	
+	if(webgl.attribute.scaling){
+		$('canvas').css('cursor', 'pointer');
+	}else{
+		$('canvas').css('cursor', 'default');
+	}
 	gl.useProgram(null);
 };
 

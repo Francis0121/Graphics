@@ -30,36 +30,47 @@ webgl.errorHandler = function(error, mode){
  * Mouse Down Event
  */
 webgl.handleMouseDown = function(){
+	if(!webgl.attribute.dragging){		
+		webgl.attribute.dragging = true;
+	}
 	webgl.errorHandler('Mouse Down', 1);
-
 };
 
 /**
  * Mouse Up Event
  */
-webgl.handleMouseUp = function(){
-	if(webgl.attribute.fLoop < 4)
-		++webgl.attribute.fLoop;
-	else
-		webgl.attribute.fLoop = 0
-	//.else if(--webgl.attribute.fLoop == -1)
-	//	webgl.attribute.fLoop = 4;
+webgl.handleMouseUp = function(event){
 	
-	webgl.drawScreen();
+	if(!webgl.attribute.scaling){
+		webgl.errorHandler('Height='+webgl.gl.viewportHeight/2);
+		if(webgl.gl.viewportHeight/2 > event.layerY){
+			webgl.errorHandler('PageY top=' + event.layerY);
+			webgl.attribute.isTop = webgl.ROTATION_STATUS.DOWN;
+			webgl.attribute.topAngle = 0.0;
+		}else{
+			webgl.errorHandler('PageY down=' + event.layerY);
+			webgl.attribute.isDown = webgl.ROTATION_STATUS.DOWN;
+			webgl.attribute.downAngle = 0.0;
+		}
+	}
+	
+	if(webgl.attribute.dragging){
+		webgl.attribute.dragging = false;		
+	}
+	
 	webgl.errorHandler('Mouse Up ' + webgl.attribute.fLoop + ' ', 1);	
 };
 
 /**
  * Mouse Wheel
  */
-
 webgl.handleMouseWheel = function(event){
 	var orthoHeight = webgl.attribute.orthoHeight,
 		orthoWidth = webgl.attribute.orthoWidth,
 		motionRate = webgl.attribute.motionRate,
-		scaleFlag = webgl.attribute.scaleFlag;
+		scaling = webgl.attribute.scaling;
 	
-	scaleFlag = true;
+	scaling = true;
 	
 	var delta = 0;
 	if (!event) 
@@ -88,15 +99,119 @@ webgl.handleMouseWheel = function(event){
 	}
 	
 	if( orthoHeight > 4 ){
-		scaleFlag = false;
+		scaling = false;
 		orthoHeight = 4;
 		orthoWidth = 3;
+		webgl.attribute.lookX = 0.0;
+		webgl.attribute.lookY = 0.0;
 	}
 	
 	webgl.attribute.orthoHeight = orthoHeight;
 	webgl.attribute.orthoWidth = orthoWidth;
 	webgl.attribute.motionRate = motionRate;
+	webgl.attribute.scaling = scaling;
 	webgl.drawScreen();
 	
-	webgl.errorHandler('Mouse Wheel ', 1);
+//	webgl.errorHandler('Mouse Wheel ', 1);
+};
+
+/**
+ * Mouse Move
+ */
+webgl.handleMouseMove = function(event){
+	var lookX = webgl.attribute.lookX,
+		lookY = webgl.attribute.lookY,
+		bPosX = webgl.attribute.bPosX,
+		bPosY = webgl.attribute.bPosY,
+		motionRate = webgl.attribute.motionRate;
+		
+	if(webgl.attribute.scaling && webgl.attribute.dragging){
+
+		if(bPosX < event.layerX){ // 감소하고 있는중
+			lookX-=motionRate;
+		}else{
+			lookX+=motionRate;
+		}
+
+		if(bPosY > event.layerY){
+			lookY-=motionRate;
+		}else{
+			lookY+=motionRate;
+		}
+
+		bPosX = event.layerX;
+		bPosY = event.layerY;
+
+		webgl.attribute.lookX = lookX;
+		webgl.attribute.lookY = lookY;
+		webgl.attribute.bPosX = bPosX;
+		webgl.attribute.bPosY = bPosY;
+
+//		webgl.errorHandler('Mouse Move X='+event.pageX+ 'Y='+event.pageY, 1);
+//		webgl.errorHandler('Look X='+lookY+ 'Y='+lookX, 1);
+		
+		webgl.drawScreen();
+	}
+
+};
+
+webgl.rotationEffect = function(){
+	var isTop = webgl.attribute.isTop,
+		isDown = webgl.attribute.isDown,
+		topAngle = webgl.attribute.topAngle,
+		downAngle = webgl.attribute.downAngle,
+		fLoop = webgl.attribute.fLoop;
+	
+	if(isTop == webgl.ROTATION_STATUS.DOWN){
+		webgl.errorHandler('isTop='+isTop);
+		if(topAngle < 45){
+			topAngle += 5.0;
+		}else if(topAngle < 90){
+			topAngle += 8.0;
+		}else{
+			downAngle = 90;
+			isDown = webgl.ROTATION_STATUS.UP;
+			isTop = webgl.ROTATION_STATUS.STOP;
+			if(++fLoop == 5){
+				fLoop = 0;
+			}
+			webgl.errorHandler('fLoop++');
+		}
+	}else if(isTop == webgl.ROTATION_STATUS.UP){
+		if(topAngle > 45 ){
+			topAngle -= 8.0;
+		}else if(topAngle > 0){
+			topAngle -= 5.0;
+		}else{
+			isTop = webgl.ROTATION_STATUS.STOP;
+		}
+	}else if(isDown == webgl.ROTATION_STATUS.DOWN){
+		webgl.errorHandler('isDown='+isDown);
+		if(downAngle < 90){
+			downAngle += 5.0;
+		}else if(downAngle < 45){
+			downAngle += 8.0;
+		}else{
+			topAngle = 90;
+			isTop = webgl.ROTATION_STATUS.UP;
+			isDown = webgl.ROTATION_STATUS.STOP;
+			if(--fLoop == -1){
+				fLoop = 4;
+			}
+			webgl.errorHandler('fLoop--');
+		}
+	}else if(isDown == webgl.ROTATION_STATUS.UP){
+		if(downAngle > 45 ){
+			downAngle -= 8.0;
+		}else if(downAngle > 0){
+			downAngle -= 5.0;	
+		}else{
+			isDown = webgl.ROTATION_STATUS.STOP;
+		}
+	}
+	webgl.attribute.isTop = isTop;
+	webgl.attribute.isDown = isDown;
+	webgl.attribute.topAngle = topAngle;
+	webgl.attribute.downAngle = downAngle;
+	webgl.attribute.fLoop = fLoop;
 };
