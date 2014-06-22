@@ -22,6 +22,10 @@ webgl.externalEvent = function(){
 		texture.initTexture();
 	});
 	
+	$('select#debugMode').bind('change', function(){
+		webgl.debugMode = $(this).val();
+	});
+	
 	$('button#speedUp1').bind('click', function(){
 		webgl.attribute.fSpeed1 += 0.001;
 		$('input#floatingSpeed1').val(webgl.attribute.fSpeed1);

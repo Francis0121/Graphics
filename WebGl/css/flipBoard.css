@@ -1,14 +1,14 @@
 @CHARSET "UTF-8";
 .wrapper_background{ width: 750px; margin: 0 auto; min-height: 500px; }
 .wrapper_background>header{ width: 650px; margin: 25px 50px; float: left;}
-.wrapper_background>article{ width: 302px; margin: 0 24px 0 49px; float: left;}
-.wrapper_background>ul{ width: 300px; margin-right: 50px; float: left;}
+.wrapper_background>article{ width: 350px; margin: 0 0 0 25px; float: left;}
+.wrapper_background>ul{ width: 300px; margin: 0 25px; float: left;}
 .wrapper_background>ul>li{width: 100%; float: left; font-size: 75%; margin: 3px 0;}
-.wrapper_background>article>canvas{ width: 300px; height: 400px; border: 1px solid #808080;}
+.wrapper_background>article>canvas{ width: 300px; height: 400px; border: 1px solid #e5e5e5; padding: 24px;}
 .wrapper_background>footer{ width: 650px; margin: 25px 50px; float: left;}
 .wrapper_background>footer>span{ font-size: 75%; }
 
-.error{ width: 630px; margin: 0px auto 25px auto; height: 180px; overflow: scroll; border: 1px solid #808080; padding: 10px; font-size: 75%; line-height: 1.5;}
+.error{ width: 680px; margin: 0px auto 25px auto; height: 180px; overflow: scroll; border: 1px solid #e5e5e5; padding: 10px; font-size: 75%; line-height: 1.5;}
 .error>span.info>span.head{ color: blue; margin-right: 5px;}
 .error>span.debug>span.head{ color: red; margin-right: 5px;}
 .error>span.default>span.head{ color: navy; margin-right: 5px;}

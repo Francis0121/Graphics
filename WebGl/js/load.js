@@ -60,8 +60,8 @@ webgl.attribute = {
 $(function() {
 	
 	// ~ Javascript Debug Start
-	webgl.debug = true;
-	webgl.debugMode = webgl.ERROR_STATUS.DEBUG;
+	webgl.debug = false;
+	webgl.debugMode = webgl.ERROR_STATUS.DEFAULT;
 	if(webgl.debug){
 		webgl.error = $('<div class="error"></div>');
 		$('body').append(webgl.error);
