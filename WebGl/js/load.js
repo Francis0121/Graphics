@@ -80,7 +80,6 @@ webgl.webGLStart = function(){
 	 
 	webgl.init();
 	
-	shader.initShader();
 	buffer.initBuffer();
 	texture.initTexture();
 	
@@ -89,9 +88,7 @@ webgl.webGLStart = function(){
       
     webgl.makeRandTexIndex();
     
-    webgl.animate();
-    setTimeout(webgl.onFloatingRestart, 1000);
-//	setTimeout(webgl.drawScreen, 100);
+    shader.loadingAfterStart();
 };
 
 webgl.makeRandTexIndex = function(){
@@ -231,7 +228,7 @@ webgl.drawScreen = function(){
 };
 
 webgl.drawTop = function(gl){
-	var shaderProgram = webgl.shaderProgram;
+	var textureShader = webgl.textureShader;
 	var colorShader = webgl.colorShader;
 	
 	var tLoop = webgl.attribute.tLoop;
@@ -248,28 +245,28 @@ webgl.drawTop = function(gl){
     
     gl.useProgram(null);
     
-	gl.useProgram(shaderProgram);
+	gl.useProgram(textureShader);
 	for(var i=0; i<(size/12); i++){	
 		gl.activeTexture(gl.TEXTURE0);
 		
 	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[webgl.attribute.randTexTopIndex[i]]);
-	    gl.uniform1i(shaderProgram.texid_loc, 0);
+	    gl.uniform1i(textureShader.texid_loc, 0);
 	    
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.topPositionBuffer);
-	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
+	    gl.vertexAttribPointer(textureShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
 	
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.texCoordBufferList[tLoop]);	
-	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(textureShader.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 
     	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[tLoop]);
-		gl.uniformMatrix4fv(shaderProgram.mvp_matrix_loc, false, projection_view_model_matrix);
+		gl.uniformMatrix4fv(textureShader.mvp_matrix_loc, false, projection_view_model_matrix);
 		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, i*12);
 	}
 	gl.useProgram(null);
 };
 
 webgl.drawDown = function(gl){
-	var shaderProgram = webgl.shaderProgram;
+	var textureShader = webgl.textureShader;
 	var colorShader = webgl.colorShader;
 	
 	var dLoop = 4-webgl.attribute.dLoop;
@@ -286,21 +283,21 @@ webgl.drawDown = function(gl){
     
     gl.useProgram(null);
 	
-	gl.useProgram(shaderProgram);
+	gl.useProgram(textureShader);
 	for(var i=0; i<(size/12); i++){	
 		gl.activeTexture(gl.TEXTURE0);
 		
 	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[webgl.attribute.randTexDownIndex[i]]);
-	    gl.uniform1i(shaderProgram.texid_loc, 0);
+	    gl.uniform1i(textureShader.texid_loc, 0);
 	    
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.downPositionBuffer);
-	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
+	    gl.vertexAttribPointer(textureShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
 	
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.texCoordBufferList[dLoop]);	
-	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(textureShader.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 
     	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[dLoop]);
-		gl.uniformMatrix4fv(shaderProgram.mvp_matrix_loc, false, projection_view_model_matrix);
+		gl.uniformMatrix4fv(textureShader.mvp_matrix_loc, false, projection_view_model_matrix);
 		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, i*12);
 	}
 	gl.useProgram(null);

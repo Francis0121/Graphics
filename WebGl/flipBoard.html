@@ -4,50 +4,14 @@
 	<title>Flip Board</title>
 	<meta content="text/html; charset=UTF-8"/>
 	<!-- Shader -->
-	<script id="shader-vs" type="x-shader/x-vertex">
-    attribute vec3 a_vertex;
-    attribute vec2 a_texcoord;
-
-    uniform mat4 mvp_matrix;
-
-    varying vec2 v_texcoord;
-
-    void main(void) {
-        gl_Position = mvp_matrix * vec4(a_vertex, 1.0);
-        v_texcoord = a_texcoord;
-    }
-	</script>
-	<script id="shader-fs" type="x-shader/x-fragment">
-	precision mediump float;
-
-    varying vec2 v_texcoord;
-
-    uniform sampler2D uTexture;
-
-    void main(void) {
-        gl_FragColor = texture2D(uTexture, v_texcoord);
-    }
-	</script>
-	
-	<script id="shader-color-vs" type="x-shader/x-vertex">
-    attribute vec3 a_vertex;
-    uniform mat4 mvp_matrix;
-
-    void main(void) {
-        gl_Position = mvp_matrix * vec4(a_vertex, 1.0);
-    }
-	</script>
-	<script id="shader-color-fs" type="x-shader/x-fragment">
-	precision mediump float;
-
-    void main(void) {
-        gl_FragColor = vec4(1, 1, 1, 1);
-    }
-	</script>
-	
-	<!-- JavaScript Matrix Plugin -->
+	<script data-src="shader/texture.vsh" data-name="texture" type="x-shader/x-vertex"></script>
+    <script data-src="shader/texture.fsh" data-name="texture" type="x-shader/x-fragment"></script>
+    <script data-src="shader/color.vsh" data-name="color" type="x-shader/x-vertex"></script>
+    <script data-src="shader/color.fsh" data-name="color" type="x-shader/x-fragment"></script>
+	<!-- JavaScript Shader Plugin -->
 	<script type="text/javascript" src="js/webgl/webgl-utils.js"></script>
 	<script type="text/javascript" src="js/webgl/gl-matrix-min.js"></script>
+	<script type="text/javascript" src="js/webgl/ShaderLoader.min.js"></script>
 	<!-- JavaScript jquery And function -->
 	<script type="text/javascript">
 		if (typeof webgl == 'undefined') {
@@ -63,13 +27,14 @@
 			texture = {};
 		}
 	</script>
-	<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="js/shader.js"></script>
+	<script type="text/javascript" src="js/load.js"></script>
 	<script type="text/javascript" src="js/texture.js"></script>
 	<script type="text/javascript" src="js/buffer.js"></script>
 	<script type="text/javascript" src="js/eventHandler.js"></script>
 	<script type="text/javascript" src="js/externalEventHandler.js"></script>
-	<script type="text/javascript" src="js/load.js"></script>
+	
 	<!-- Style -->
 	<link rel="stylesheet" type="text/css" href="css/default.css">
 	<link rel="stylesheet" type="text/css" href="css/flipboard.css">
@@ -120,6 +85,34 @@
 			<li>
 				<label for="mix">Mix Picuture Index</label>
 				<button type="button" id="mix">do</button>
+			</li>
+			<li>
+				<h3>Material</h3>
+				<label for="shininess">Shininess : </label><input type="text" value="100" id="shininess" class="black_input"/>
+			</li>
+			<li>
+				<h3>Location</h3>
+				<label for="locationX">X : </label><input type="text" id="locationX" value="1.0" class="black_input"/>
+				<label for="locationY">Y : </label><input type="text" id="locationY" value="4.0" class="black_input"/>
+				<label for="locationZ">Z : </label><input type="text" id="locationZ" value="-20.0" class="black_input"/>
+			</li>
+			<li>
+				<h3>Specular</h3>
+				<label for="specularR">R : </label><input type="text" id="specularR" value="0.8" class="black_input"/>
+				<label for="specularG">G : </label><input type="text" id="specularG" value="0.8" class="black_input"/>
+				<label for="specularB">B : </label><input type="text" id="specularB" value="0.8" class="black_input"/>
+			</li>
+			<li>
+				<h3>Diffuse</h3>
+				<label for="diffuseR">R : </label><input type="text" id="diffuseR" value="0.8" class="black_input"/>
+				<label for="diffuseG">G : </label><input type="text" id="diffuseG" value="0.8" class="black_input"/>
+				<label for="diffuseB">B : </label><input type="text" id="diffuseB" value="0.8" class="black_input"/>
+			</li>
+			<li>
+				<h3>Ambient</h3>
+				<label for="ambientR">R : </label><input type="text" id="ambientR" value="0.2" class="black_input"/>
+				<label for="ambientG">G : </label><input type="text" id="ambientG" value="0.2" class="black_input"/>
+				<label for="ambientB">B : </label><input type="text" id="ambientB" value="0.2" class="black_input"/>
 			</li>
 		</ul>
 		<footer>
