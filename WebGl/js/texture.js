@@ -2,16 +2,10 @@
  * Texture Initiate
  */
 texture.initTexture = function(){
-
-    var image = new Image();
-    image.addEventListener('load', function(){
-    	texture.handleLoadedTexture(image);
-    }, false);
-    image.src = './image/00.jpg';
-    
+	
     var texList = new Array();
     for(var i=0; i<10; i++){
-    	texture.createImage('./image/0'+i+'.jpg', texList);
+    	texture.createImage('./image/'+$('select#texture').val()+'/0'+i+'.jpg', texList);
     }
     webgl.texList = texList;
     

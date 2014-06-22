@@ -40,9 +40,11 @@ shader.getShader = function(gl, id) {
  * Shader Initiate
  */
 shader.initShader = function(){
-	// Texture Shader
+
 	var gl = webgl.gl;
 	var shaderProgram = gl.createProgram();
+	
+	// Texture Shader
 	
 	var fragmentShader = shader.getShader(gl, 'shader-fs');
     var vertexShader = shader.getShader(gl, 'shader-vs');

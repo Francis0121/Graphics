@@ -75,7 +75,7 @@ webgl.handleMouseUp = function(event){
 		webgl.attribute.dragging = false;		
 	}
 	
-	if(webgl.attribute.floating){
+	if(webgl.attribute.floating && !webgl.attribute.scaling){
 		
 		webgl.attribute.xMax = 0.8;
 		webgl.attribute.yMax = 0.9;
@@ -257,8 +257,8 @@ webgl.onXdecrease = function(){
 	if(webgl.attribute.scaling){
 		return;
 	}
-	webgl.attribute.xMin -= 0.001;
-	webgl.attribute.xMax -= 0.001;
+	webgl.attribute.xMin -= webgl.attribute.fSpeed1;
+	webgl.attribute.xMax -= webgl.attribute.fSpeed1;
 
 	buffer.texture();
 	
@@ -266,7 +266,7 @@ webgl.onXdecrease = function(){
 		if(webgl.attribute.xMin < 0.05){
 			setTimeout(webgl.onXincrease, 500);
 		}else{
-			setTimeout(webgl.onXdecrease, 25);
+			setTimeout(webgl.onXdecrease, 30);
 		}
 	}
 };
@@ -275,8 +275,8 @@ webgl.onXincrease = function(){
 	if(webgl.attribute.scaling){
 		return;
 	}
-	webgl.attribute.xMin += 0.001;
-	webgl.attribute.xMax += 0.001;
+	webgl.attribute.xMin += webgl.attribute.fSpeed1;
+	webgl.attribute.xMax += webgl.attribute.fSpeed1;
 
 	buffer.texture();
 	
@@ -284,7 +284,7 @@ webgl.onXincrease = function(){
 		if(webgl.attribute.xMax > 0.95 ){
 			setTimeout(webgl.onXdecrease, 500);
 		}else{
-			setTimeout(webgl.onXincrease, 25);
+			setTimeout(webgl.onXincrease, 30);
 		}
 	}
 }
@@ -293,8 +293,8 @@ webgl.onYdecrease = function(){
 	if(webgl.attribute.scaling){
 		return;
 	}
-	webgl.attribute.yMin -= 0.002;
-	webgl.attribute.yMax -= 0.002;
+	webgl.attribute.yMin -= webgl.attribute.fSpeed2;
+	webgl.attribute.yMax -= webgl.attribute.fSpeed2;
 
 	buffer.texture();
 
@@ -302,7 +302,7 @@ webgl.onYdecrease = function(){
 		if(webgl.attribute.yMin < 0.05 ){
 			setTimeout(webgl.onYincrease, 500);
 		}else{
-			setTimeout(webgl.onYdecrease, 25);
+			setTimeout(webgl.onYdecrease, 30);
 		}
 	}
 }
@@ -311,8 +311,8 @@ webgl.onYincrease = function(){
 	if(webgl.attribute.scaling){
 		return;
 	}
-	webgl.attribute.yMin += 0.002;
-	webgl.attribute.yMax += 0.002;
+	webgl.attribute.yMin += webgl.attribute.fSpeed2;
+	webgl.attribute.yMax += webgl.attribute.fSpeed2;
 
 	buffer.texture();
 
@@ -320,7 +320,7 @@ webgl.onYincrease = function(){
 		if(webgl.attribute.yMax > 0.95 ){
 			setTimeout(webgl.onYdecrease, 500);
 		}else{
-			setTimeout(webgl.onYincrease, 25);
+			setTimeout(webgl.onYincrease, 30);
 		}
 	}
 }

@@ -47,7 +47,7 @@
 	
 	<!-- JavaScript Matrix Plugin -->
 	<script type="text/javascript" src="js/webgl/webgl-utils.js"></script>
-	<script type="text/javascript" src="js/webgl/gl-matrix.js"></script>
+	<script type="text/javascript" src="js/webgl/gl-matrix-min.js"></script>
 	<!-- JavaScript jquery And function -->
 	<script type="text/javascript">
 		if (typeof webgl == 'undefined') {
@@ -68,6 +68,7 @@
 	<script type="text/javascript" src="js/texture.js"></script>
 	<script type="text/javascript" src="js/buffer.js"></script>
 	<script type="text/javascript" src="js/eventHandler.js"></script>
+	<script type="text/javascript" src="js/externalEventHandler.js"></script>
 	<script type="text/javascript" src="js/load.js"></script>
 	<!-- Style -->
 	<link rel="stylesheet" type="text/css" href="css/default.css">
@@ -84,7 +85,34 @@
 		</article>
 		<ul>
 			<li>
-				<label for=""></label><input type="text" value="" id=""/>
+				<label for="texture">Texture</label>
+				<select id="texture" name="texture">
+					<option value="bg">Default</option>
+					<option value="icon">Social Icon</option>
+					<option value="color">Color</option>
+				</select>
+			</li>
+			<li>
+				<label for="floatingSpeed1">Floating Speed X : </label>
+				<input type="text" value="0.001" id="floatingSpeed1" name="floatingSpeed1" readonly="readonly" class="empty_input"/>
+				<button type="button" id="speedUp1">up</button>
+				<button type="button" id="speedDown1">down</button>
+			</li>
+			<li>
+				<label for="floatingSpeed2">Floating Speed Y : </label>
+				<input type="text" value="0.002" id="floatingSpeed2" name="floatingSpeed2" readonly="readonly" class="empty_input"/>
+				<button type="button" id="speedUp2">up</button>
+				<button type="button" id="speedDown2">down</button>
+			</li>
+			<li>
+				<label for="motionRate">Motion Rate : </label>
+				<input type="text" id="motionRate" name="motionRate" readonly="readonly" class="empty_input"/>
+				<button type="button" id="motionRateUp">up</button>
+				<button type="button" id="motionRateDown">down</button>
+			</li>
+			<li>
+				<label for="mix">Mix Picuture Index</label>
+				<button type="button" id="mix">do</button>
 			</li>
 		</ul>
 		<footer>

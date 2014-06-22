@@ -39,10 +39,15 @@ webgl.attribute = {
 	downAngle : 0.0,
 	// Floating
 	floating : true,
+	fSpeed1 : 0.001,
+	fSpeed2 : 0.002,
 	xMax : 0.8, 
 	yMax : 0.9, 
 	xMin : 0.3, 
 	yMin : 0.1,
+	// RandomList
+	randTexTopIndex : new Array(),
+	randTexDownIndex : new Array()
 };
 
 $(function() {
@@ -58,12 +63,7 @@ $(function() {
 	
 	webgl.webGLStart();
 	
-	$('body').bind('mouseup', function(){
-		if(webgl.attribute.dragging){
-			webgl.attribute.dragging = false;
-			webgl.errorHandler('Mouse point canvas out', 2);
-		}
-	});
+	webgl.externalEvent();
 });
 
 /**
@@ -79,10 +79,31 @@ webgl.webGLStart = function(){
 	
 	webgl.gl.clearColor(1.0, 1.0, 1.0, 1.0);
     webgl.gl.enable(webgl.gl.DEPTH_TEST);
+      
+    webgl.makeRandTexIndex();
     
     webgl.animate();
     setTimeout(webgl.onFloatingRestart, 1000);
 //	setTimeout(webgl.drawScreen, 100);
+};
+
+webgl.makeRandTexIndex = function(){
+	webgl.attribute.randTexTopIndex = new Array();
+	webgl.attribute.randTexDownIndex = new Array();
+	
+	while(webgl.attribute.randTexTopIndex.length !=6){
+		var value = Math.floor(Math.random() * 10);
+		if(jQuery.inArray(value, webgl.attribute.randTexTopIndex) == -1){
+			webgl.attribute.randTexTopIndex.push(value);
+		}
+	}
+	
+	while(webgl.attribute.randTexDownIndex.length !=6){
+		var value = Math.floor(Math.random() * 10);
+		if(jQuery.inArray(value, webgl.attribute.randTexDownIndex) == -1){
+			webgl.attribute.randTexDownIndex.push(value);
+		}
+	}
 };
 
 /**
@@ -195,6 +216,7 @@ webgl.drawScreen = function(){
 	}else{
 		$('canvas').css('cursor', 'default');
 	}
+	$('input#motionRate').val(webgl.attribute.motionRate);
 };
 
 webgl.drawTop = function(gl){
@@ -219,7 +241,7 @@ webgl.drawTop = function(gl){
 	for(var i=0; i<(size/12); i++){	
 		gl.activeTexture(gl.TEXTURE0);
 		
-	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[i]);
+	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[webgl.attribute.randTexTopIndex[i]]);
 	    gl.uniform1i(shaderProgram.texid_loc, 0);
 	    
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.topPositionBuffer);
@@ -239,7 +261,7 @@ webgl.drawDown = function(gl){
 	var shaderProgram = webgl.shaderProgram;
 	var colorShader = webgl.colorShader;
 	
-	var dLoop = webgl.attribute.dLoop;
+	var dLoop = 4-webgl.attribute.dLoop;
 	var size = buffer.indexBufferList[dLoop].numItems;
 	
 	gl.useProgram(colorShader);
@@ -257,7 +279,7 @@ webgl.drawDown = function(gl){
 	for(var i=0; i<(size/12); i++){	
 		gl.activeTexture(gl.TEXTURE0);
 		
-	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[9-i]);
+	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[webgl.attribute.randTexDownIndex[i]]);
 	    gl.uniform1i(shaderProgram.texid_loc, 0);
 	    
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.downPositionBuffer);

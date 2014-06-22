@@ -20,30 +20,30 @@ buffer.vertice = function(){
 	buffer.topPositionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, buffer.topPositionBuffer);
 	var vertices = [
-		2.9, 4.0, 0.0,
-		0.1, 4.0, 0.0,
-		0.1, 2.2, 0.0,
-		2.9, 2.2, 0.0,
+		2.95, 4.05, 0.0,
+		0.05, 4.05, 0.0,
+		0.05, 2.15, 0.0,
+		2.95, 2.15, 0.0,
 		
-		2.9, 2.0, 0.0,
-		0.1, 2.0, 0.0,
-		0.1, 0.2, 0.0,
-		2.9, 0.2, 0.0,
+		2.95, 2.05, 0.0,
+		0.05, 2.05, 0.0,
+		0.05, 0.10, 0.0,
+		2.95, 0.10, 0.0,
 		
-		-0.1, 4.0, 0.0,
-		-2.9, 4.0, 0.0,
-		-2.9, 2.2, 0.0,
-		-0.1, 2.2, 0.0,
+		-0.05, 4.05, 0.0,
+		-2.95, 4.05, 0.0,
+		-2.95, 2.15, 0.0,
+		-0.05, 2.15, 0.0,
 		
-		-0.1, 2.0, 0.0,
-		-2.9, 2.0, 0.0,
-		-2.9, 0.2, 0.0,
-		-0.1, 0.2, 0.0,
+		-0.05, 2.05, 0.0,
+		-2.95, 2.05, 0.0,
+		-2.95, 0.10, 0.0,
+		-0.05, 0.10, 0.0,
 		
-		2.9, 0.0, 0.0,
-		0.1, 0.0, 0.0,
-		-0.1, 0.0, 0.0,
-		-2.9, 0.0, 0.0
+		2.95, 0.0, 0.0,
+		0.05, 0.0, 0.0,
+		-0.05, 0.0, 0.0,
+		-2.95, 0.0, 0.0
 	];
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	buffer.topPositionBuffer.numItems = 20;
@@ -51,30 +51,30 @@ buffer.vertice = function(){
 	buffer.downPositionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, buffer.downPositionBuffer);
 	var vertices = [
-		2.9, 0.0, 0.0,
-		0.1, 0.0, 0.0,
-		0.1, -1.8, 0.0,
-		2.9, -1.8, 0.0,
+		2.95, 0.0, 0.0,
+		0.05, 0.0, 0.0,
+		0.05, -1.85, 0.0,
+		2.95, -1.85, 0.0,
 		
-		2.9, -2.0, 0.0,
-		0.1, -2.0, 0.0,
-		0.1, -3.8, 0.0,
-		2.9, -3.8, 0.0,
+		2.95, -1.95, 0.0,
+		0.05, -1.95, 0.0,
+		0.05, -3.85, 0.0,
+		2.95, -3.85, 0.0,
 		
-		-0.1, 0.0, 0.0,
-		-2.9, 0.0, 0.0,
-		-2.9, -1.8, 0.0,
-		-0.1, -1.8, 0.0,
+		-0.05, 0.0, 0.0,
+		-2.95, 0.0, 0.0,
+		-2.95, -1.85, 0.0,
+		-0.05, -1.85, 0.0,
 		
-		-0.1, -2.0, 0.0,
-		-2.9, -2.0, 0.0,
-		-2.9, -3.8, 0.0,
-		-0.1, -3.8, 0.0,
+		-0.05, -1.95, 0.0,
+		-2.95, -1.95, 0.0,
+		-2.95, -3.85, 0.0,
+		-0.05, -3.85, 0.0,
 		
-		2.9, -4.0, 0.0,
-		0.1, -4.0, 0.0,
-		-0.1, -4.0, 0.0,
-		-2.9, -4.0, 0.0
+		2.95, -4.0, 0.0,
+		0.05, -4.0, 0.0,
+		-0.05, -4.0, 0.0,
+		-2.95, -4.0, 0.0
 	];
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	buffer.downPositionBuffer.numItems = 20;
@@ -102,28 +102,28 @@ buffer.texture = function(){
 			0, 0,		0, 0,		0, 0,		0, 0
 		],
      	[
-			xMin, yMax,  xMax, yMax,  0, 0,  0, 0,
-			0, 0,  0, 0,  xMax, yMin,  xMin, yMin,
-			yMin, xMax,  yMax, xMax,  0, 0,  0, 0,
-			0, 0,  0, 0,  yMax, xMin,  yMin, xMin
+			xMax, yMax, xMin, yMax, 0, 0,  		0, 0,
+			0, 0, 		0, 0,  		xMin, yMin, xMax, yMin,
+			yMax, xMax, yMin, xMax, 0, 0,  		0, 0,
+			0, 0,  		0, 0,  		yMin, xMin, yMax, xMin
      	],
      	[
-			xMin, yMax,  0, 0,  0, 0,  xMin, yMin,
-			yMin, xMax,  0, 0,  0, 0,  yMin, xMin,
-			0, 0,  xMax, yMax,  xMax, yMin,  0, 0,
-			0, 0,  yMax, xMax,  yMax, xMin,  0, 0
+			xMax, yMax, 0, 0,  		0, 0,  		xMax, yMin,
+			yMax, xMax, 0, 0,  		0, 0,  		yMax, xMin,
+			0, 0,  		xMin, yMax, xMin, yMin, 0, 0,
+			0, 0,  		yMin, xMax, yMin, xMin, 0, 0
      	],
      	[
-			xMin, yMax,  0, 0,  0, 0,  xMin, yMin,
-			xMin, yMax,  xMax, yMax,  xMax, yMin,  xMin, yMin,
-			0, 0,  xMax, yMax, xMax, yMin,  0, 0,
-			xMin, yMax,  xMax, yMax,  xMax, yMin, xMin, yMin
+			xMax, yMax, 0, 0,  		0, 0,  		xMax, yMin,
+			xMax, yMax, xMin, yMax, xMin, yMin, xMax, yMin,
+			0, 0,  		xMin, yMax, xMin, yMin, 0, 0,
+			xMax, yMax, xMin, yMax, xMin, yMin, xMax, yMin
      	],
      	[
-			xMin, yMax,  xMax, yMax,  xMax, yMin,  xMin, yMin,
-			xMin, yMax,  xMax, yMax,  xMax, yMin,  xMin, yMin,
-			yMin, xMax,  yMax, xMax,  yMax, xMin,  yMin, xMin,
-			yMin, xMax,  yMax, xMax,  yMax, xMin,  yMin, xMin
+			xMax, yMax, xMin, yMax, xMin, yMin, xMax, yMin,
+			xMax, yMax, xMin, yMax, xMin, yMin, xMax, yMin,
+			yMax, xMax, yMin, xMax, yMin, xMin, yMax, xMin,
+			yMax, xMax, yMin, xMax, yMin, xMin, yMax, xMin
      	],
 	];
 	
