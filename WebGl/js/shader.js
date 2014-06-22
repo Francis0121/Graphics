@@ -40,6 +40,7 @@ shader.getShader = function(gl, id) {
  * Shader Initiate
  */
 shader.initShader = function(){
+	// Texture Shader
 	var gl = webgl.gl;
 	var shaderProgram = gl.createProgram();
 	
@@ -67,4 +68,26 @@ shader.initShader = function(){
 	
     webgl.shaderProgram = shaderProgram;
 	webgl.errorHandler('Link Shader', 1);
+	
+	// Color Shader
+	var colorShader = gl.createProgram();
+	vertexShader = shader.getShader(gl, 'shader-color-vs');
+	fragmentShader = shader.getShader(gl, 'shader-color-fs');
+	
+    gl.attachShader(colorShader, vertexShader);
+    gl.attachShader(colorShader, fragmentShader);
+    gl.linkProgram(colorShader);
+    
+    if (!gl.getProgramParameter(colorShader, gl.LINK_STATUS)) {
+    	webgl.errorHandler('Could not initialise color shader', 2);
+    }
+    gl.useProgram(colorShader);
+
+    colorShader.vertexPositionAttribute = gl.getAttribLocation(colorShader, 'a_vertex');
+    gl.enableVertexAttribArray(colorShader.vertexPositionAttribute);
+    
+    colorShader.mvp_matrix_loc = gl.getUniformLocation(colorShader, 'mvp_matrix');
+	
+    webgl.colorShader = colorShader;
+    
 };

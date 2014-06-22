@@ -22,8 +22,25 @@ webgl.errorHandler = function(error, mode){
 		message = error.message;
 	}
 	
-	span.append(message);
-	webgl.error.append(span).append('<br/>');
+	switch(webgl.debugMode){
+	case webgl.ERROR_STATUS.DEBUG:
+		if(	mode == webgl.ERROR_STATUS.DEBUG ){
+			span.append(message);
+			webgl.error.append(span).append('<br/>');
+		}
+		break;
+	case webgl.ERROR_STATUS.INFO:
+		if(	mode == webgl.ERROR_STATUS.INFO ||
+			mode == webgl.ERROR_STATUS.DEBUG ){
+			span.append(message);
+			webgl.error.append(span).append('<br/>');
+		}
+		break;
+	case webgl.ERROR_STATUS.DEFAULT:
+		span.append(message);
+		webgl.error.append(span).append('<br/>');
+		break;
+	}
 };
 
 /**
@@ -56,6 +73,18 @@ webgl.handleMouseUp = function(event){
 	
 	if(webgl.attribute.dragging){
 		webgl.attribute.dragging = false;		
+	}
+	
+	if(webgl.attribute.floating){
+		
+		webgl.attribute.xMax = 0.8;
+		webgl.attribute.yMax = 0.9;
+		webgl.attribute.xMin = 0.2;
+		webgl.attribute.yMin = 0.3;
+		buffer.texture();
+
+		webgl.attribute.floating = false;
+		setTimeout(webgl.onFloatingRestart, 3000);
 	}
 	
 	webgl.errorHandler('Mouse Up ' + webgl.attribute.fLoop + ' ', 1);	
@@ -127,7 +156,7 @@ webgl.handleMouseMove = function(event){
 		
 	if(webgl.attribute.scaling && webgl.attribute.dragging){
 
-		if(bPosX < event.layerX){ // 감소하고 있는중
+		if(bPosX < event.layerX){
 			lookX-=motionRate;
 		}else{
 			lookX+=motionRate;
@@ -215,3 +244,83 @@ webgl.rotationEffect = function(){
 	webgl.attribute.downAngle = downAngle;
 	webgl.attribute.fLoop = fLoop;
 };
+
+
+
+webgl.onFloatingRestart = function(){
+	webgl.attribute.floating = true;
+	setTimeout(webgl.onXdecrease, 10);
+	setTimeout(webgl.onYincrease, 10);
+};
+
+webgl.onXdecrease = function(){
+	if(webgl.attribute.scaling){
+		return;
+	}
+	webgl.attribute.xMin -= 0.001;
+	webgl.attribute.xMax -= 0.001;
+
+	buffer.texture();
+	
+	if(webgl.attribute.floating){
+		if(webgl.attribute.xMin < 0.05){
+			setTimeout(webgl.onXincrease, 500);
+		}else{
+			setTimeout(webgl.onXdecrease, 25);
+		}
+	}
+};
+
+webgl.onXincrease = function(){
+	if(webgl.attribute.scaling){
+		return;
+	}
+	webgl.attribute.xMin += 0.001;
+	webgl.attribute.xMax += 0.001;
+
+	buffer.texture();
+	
+	if(webgl.attribute.floating){
+		if(webgl.attribute.xMax > 0.95 ){
+			setTimeout(webgl.onXdecrease, 500);
+		}else{
+			setTimeout(webgl.onXincrease, 25);
+		}
+	}
+}
+
+webgl.onYdecrease = function(){
+	if(webgl.attribute.scaling){
+		return;
+	}
+	webgl.attribute.yMin -= 0.002;
+	webgl.attribute.yMax -= 0.002;
+
+	buffer.texture();
+
+	if(webgl.attribute.floating){
+		if(webgl.attribute.yMin < 0.05 ){
+			setTimeout(webgl.onYincrease, 500);
+		}else{
+			setTimeout(webgl.onYdecrease, 25);
+		}
+	}
+}
+
+webgl.onYincrease = function(){
+	if(webgl.attribute.scaling){
+		return;
+	}
+	webgl.attribute.yMin += 0.002;
+	webgl.attribute.yMax += 0.002;
+
+	buffer.texture();
+
+	if(webgl.attribute.floating){
+		if(webgl.attribute.yMax > 0.95 ){
+			setTimeout(webgl.onYdecrease, 500);
+		}else{
+			setTimeout(webgl.onYincrease, 25);
+		}
+	}
+}

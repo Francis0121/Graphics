@@ -28,6 +28,23 @@
         gl_FragColor = texture2D(uTexture, v_texcoord);
     }
 	</script>
+	
+	<script id="shader-color-vs" type="x-shader/x-vertex">
+    attribute vec3 a_vertex;
+    uniform mat4 mvp_matrix;
+
+    void main(void) {
+        gl_Position = mvp_matrix * vec4(a_vertex, 1.0);
+    }
+	</script>
+	<script id="shader-color-fs" type="x-shader/x-fragment">
+	precision mediump float;
+
+    void main(void) {
+        gl_FragColor = vec4(1, 1, 1, 1);
+    }
+	</script>
+	
 	<!-- JavaScript Matrix Plugin -->
 	<script type="text/javascript" src="js/webgl/webgl-utils.js"></script>
 	<script type="text/javascript" src="js/webgl/gl-matrix.js"></script>
@@ -65,6 +82,11 @@
 		<article>
 			<canvas id="webgl_canvas" width="302" height="402"></canvas>
 		</article>
+		<ul>
+			<li>
+				<label for=""></label><input type="text" value="" id=""/>
+			</li>
+		</ul>
 		<footer>
 			<span>(c) Made by KookminUniversity. All rights reserved.</span>
 		</footer>

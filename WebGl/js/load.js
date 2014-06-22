@@ -4,10 +4,52 @@ var model_matrix = mat4.create();
 var view_model_matrix = mat4.create();
 var projection_view_model_matrix = mat4.create();
 var matStack = new Array();
+//~ Final Variable
+webgl.ROTATION_STATUS = {
+	STOP : 0,
+	DOWN : 1,
+	UP : 2
+};
+
+webgl.ERROR_STATUS = {
+	DEBUG : 2,
+	INFO : 1,
+	DEFAULT : 0,
+};
+
+webgl.attribute = {
+	tLoop : 0, // Top Loop
+	dLoop : 0, // Down Loop
+	fLoop : 0, // Frame Loop
+	dragging : false,
+	// Screen Size
+	scaling : false,
+	orthoWidth : 3.0, 
+	orthoHeight : 4.0,
+	// Screen move
+	motionRate : 0.03,
+	lookX : 0.0,
+	lookY : 0.0,
+	bPosX : 0.0, // Before Position X 
+	bPosY : 0.0,  // Before Position Y
+	// Rotation
+	isTop : webgl.ROTATION_STATUS.STOP,
+	isDown : webgl.ROTATION_STATUS.STOP,
+	topAngle : 0.0,
+	downAngle : 0.0,
+	// Floating
+	floating : true,
+	xMax : 0.8, 
+	yMax : 0.9, 
+	xMin : 0.3, 
+	yMin : 0.1,
+};
 
 $(function() {
+	
 	// ~ Javascript Debug Start
 	webgl.debug = true;
+	webgl.debugMode = webgl.ERROR_STATUS.DEFAULT;
 	if(webgl.debug){
 		webgl.error = $('<div class="error"></div>');
 		$('body').append(webgl.error);
@@ -15,17 +57,19 @@ $(function() {
 	//~ Javascript Debug End
 	
 	webgl.webGLStart();
+	
+	$('body').bind('mouseup', function(){
+		if(webgl.attribute.dragging){
+			webgl.attribute.dragging = false;
+			webgl.errorHandler('Mouse point canvas out', 2);
+		}
+	});
 });
 
 /**
  * Web GL Start
  */
 webgl.webGLStart = function(){
-	 webgl.ROTATION_STATUS = {
-    	STOP : 0,
-    	DOWN : 1,
-    	UP : 2
-    };
 	 
 	webgl.init();
 	
@@ -35,29 +79,9 @@ webgl.webGLStart = function(){
 	
 	webgl.gl.clearColor(1.0, 1.0, 1.0, 1.0);
     webgl.gl.enable(webgl.gl.DEPTH_TEST);
-    webgl.attribute = {
-    	tLoop : 0, // Top Loop
-    	dLoop : 0, // Down Loop
-    	fLoop : 0, // Frame Loop
-    	dragging : false,
-    	// Screen Size
-    	scaling : false,
-    	orthoWidth : 3.0, 
-    	orthoHeight : 4.0,
-    	// Screen move
-    	motionRate : 0.03,
-    	lookX : 0.0,
-    	lookY : 0.0,
-    	bPosX : 0.0, // Before Position X 
-    	bPosY : 0.0,  // Before Position Y
-    	// Rotation
-    	isTop : webgl.ROTATION_STATUS.STOP,
-    	isDown : webgl.ROTATION_STATUS.STOP,
-    	topAngle : 0.0,
-    	downAngle : 0.0
-    };
     
     webgl.animate();
+    setTimeout(webgl.onFloatingRestart, 1000);
 //	setTimeout(webgl.drawScreen, 100);
 };
 
@@ -100,16 +124,12 @@ webgl.init = function(){
  */
 webgl.drawScreen = function(){
 	var gl = webgl.gl;
-	var shaderProgram = webgl.shaderProgram;
 	
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-    gl.useProgram(shaderProgram);
-    
     // ~ Camera
 
-//    mat4.perspective(projection_matrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);	
     mat4.identity(projection_matrix);
     mat4.ortho(projection_matrix, 
     		-webgl.attribute.orthoWidth-0.1, 
@@ -141,14 +161,13 @@ webgl.drawScreen = function(){
 		
 		mat4.translate(model_matrix, model_matrix, [0, 0, -i*5]);
 		if( webgl.attribute.isTop != webgl.ROTATION_STATUS.STOP && i == 0){
-//			
 			mat4.rotateX(model_matrix, model_matrix, webgl.attribute.topAngle*Math.PI/180); 
 		}
 		
 		mat4.multiply(view_model_matrix, view_matrix, model_matrix);
 		mat4.multiply(projection_view_model_matrix, projection_matrix, view_model_matrix);
 		
-		webgl.drawTop(gl, shaderProgram);
+		webgl.drawTop(gl);
 		if(++webgl.attribute.tLoop == 5)
 			webgl.attribute.tLoop = 0;
 		
@@ -161,28 +180,42 @@ webgl.drawScreen = function(){
 		if(webgl.attribute.isDown != webgl.ROTATION_STATUS.STOP && i == 0){
 			mat4.rotateX(model_matrix, model_matrix, webgl.attribute.downAngle*Math.PI/180);
 		}
+		
 		mat4.multiply(view_model_matrix, view_matrix, model_matrix);
 		mat4.multiply(projection_view_model_matrix, projection_matrix, view_model_matrix);
 		
-		webgl.drawDown(gl, shaderProgram);
+		webgl.drawDown(gl);
 		if(--webgl.attribute.dLoop == -1)
 			webgl.attribute.dLoop = 4;
 		
 	}
-	
 	
 	if(webgl.attribute.scaling){
 		$('canvas').css('cursor', 'pointer');
 	}else{
 		$('canvas').css('cursor', 'default');
 	}
-	gl.useProgram(null);
 };
 
-webgl.drawTop = function(gl, shaderProgram){
+webgl.drawTop = function(gl){
+	var shaderProgram = webgl.shaderProgram;
+	var colorShader = webgl.colorShader;
+	
 	var tLoop = webgl.attribute.tLoop;
 	var size = buffer.indexBufferList[tLoop].numItems;
+
+	gl.useProgram(colorShader);
 	
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer.topPositionBuffer);
+    gl.vertexAttribPointer(colorShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
+	
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[tLoop]);
+    gl.uniformMatrix4fv(colorShader.mvp_matrix_loc, false, projection_view_model_matrix);
+    gl.drawElements(gl.TRIANGLES, size/2, gl.UNSIGNED_SHORT, size);
+    
+    gl.useProgram(null);
+    
+	gl.useProgram(shaderProgram);
 	for(var i=0; i<(size/12); i++){	
 		gl.activeTexture(gl.TEXTURE0);
 		
@@ -199,12 +232,28 @@ webgl.drawTop = function(gl, shaderProgram){
 		gl.uniformMatrix4fv(shaderProgram.mvp_matrix_loc, false, projection_view_model_matrix);
 		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, i*12);
 	}
+	gl.useProgram(null);
 };
 
-webgl.drawDown = function(gl, shaderProgram){
+webgl.drawDown = function(gl){
+	var shaderProgram = webgl.shaderProgram;
+	var colorShader = webgl.colorShader;
+	
 	var dLoop = webgl.attribute.dLoop;
 	var size = buffer.indexBufferList[dLoop].numItems;
 	
+	gl.useProgram(colorShader);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer.downPositionBuffer);
+    gl.vertexAttribPointer(colorShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
+	
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[dLoop]);
+    gl.uniformMatrix4fv(colorShader.mvp_matrix_loc, false, projection_view_model_matrix);
+    gl.drawElements(gl.TRIANGLES, size/2, gl.UNSIGNED_SHORT, size);
+    
+    gl.useProgram(null);
+	
+	gl.useProgram(shaderProgram);
 	for(var i=0; i<(size/12); i++){	
 		gl.activeTexture(gl.TEXTURE0);
 		
@@ -221,5 +270,6 @@ webgl.drawDown = function(gl, shaderProgram){
 		gl.uniformMatrix4fv(shaderProgram.mvp_matrix_loc, false, projection_view_model_matrix);
 		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, i*12);
 	}
+	gl.useProgram(null);
 };
 

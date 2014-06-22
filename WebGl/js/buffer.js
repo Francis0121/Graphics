@@ -86,7 +86,12 @@ buffer.vertice = function(){
  */
 buffer.texture = function(){
 	var gl = webgl.gl;
-	var xMax = 1, yMax = 1, xMin = 0, yMin = 0;
+	
+	var xMax = webgl.attribute.xMax, 
+		yMax = webgl.attribute.yMax, 
+		xMin = webgl.attribute.xMin, 
+		yMin = webgl.attribute.yMin;
+	
 	var texCoordBuffer, texCoordBufferList = new Array();
 	var textureCoords = [
      	[
@@ -131,7 +136,6 @@ buffer.texture = function(){
 	}
 	
     buffer.texCoordBufferList = texCoordBufferList;
-    webgl.errorHandler('TextCoord Buffer initiate', 1);
 };
 
 /**
