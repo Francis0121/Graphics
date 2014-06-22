@@ -9,6 +9,44 @@ buffer.initBuffer = function(){
 	buffer.texture();
 	
 	buffer.indecies();	
+	
+	buffer.normal();
+};
+/**
+ * Vertex Normal Buffer
+ */
+buffer.normal = function(){
+	var gl = webgl.gl;
+	buffer.vertexNormalBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer.vertexNormalBuffer);
+	var normals = [
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0,
+	   0.0, 0.0, 1.0
+	];
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+	buffer.vertexNormalBuffer.numItems = 20;
 };
 
 /**

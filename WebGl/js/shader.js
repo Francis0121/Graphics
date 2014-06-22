@@ -52,8 +52,22 @@ shader.loadingAfterStart = function(){
 	    textureShader.textureCoordAttribute = gl.getAttribLocation(textureShader, 'a_texcoord');
 	    gl.enableVertexAttribArray(textureShader.textureCoordAttribute);
 	    
-	    textureShader.mvp_matrix_loc = gl.getUniformLocation(textureShader, 'mvp_matrix');
+	    textureShader.vertexNormalAttribute = gl.getAttribLocation(textureShader, 'a_vertexnormal');
+        gl.enableVertexAttribArray(textureShader.vertexNormalAttribute);
+	    // Model View Projection Normal
+	    textureShader.mv_matrix = gl.getUniformLocation(textureShader, 'mv_matrix');
+	    textureShader.p_matrix = gl.getUniformLocation(textureShader, 'p_matrix');
+	    textureShader.n_matrix = gl.getUniformLocation(textureShader, 'n_matrix');
+	    // Texture
 	    textureShader.texid_loc = gl.getUniformLocation(textureShader, 'uTexture');
+	    // Light
+	    textureShader.materialShininessUniform = gl.getUniformLocation(textureShader, 'uMaterialShininess');
+	    textureShader.showSpecularHighlightsUniform = gl.getUniformLocation(textureShader, 'uShowSpecularHighlights');
+	    textureShader.useLightingUniform = gl.getUniformLocation(textureShader, 'uUseLighting');
+	    textureShader.ambientColorUniform = gl.getUniformLocation(textureShader, 'uAmbientColor');
+	    textureShader.pointLightingLocationUniform = gl.getUniformLocation(textureShader, 'uPointLightingLocation');
+	    textureShader.pointLightingSpecularColorUniform = gl.getUniformLocation(textureShader, 'uPointLightingSpecularColor');
+	    textureShader.pointLightingDiffuseColorUniform = gl.getUniformLocation(textureShader, 'uPointLightingDiffuseColor');
 		
 	    webgl.textureShader = textureShader;
 	    webgl.errorHandler('Link Texture shader', 1);

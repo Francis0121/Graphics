@@ -61,7 +61,7 @@ $(function() {
 	
 	// ~ Javascript Debug Start
 	webgl.debug = true;
-	webgl.debugMode = webgl.ERROR_STATUS.DEFAULT;
+	webgl.debugMode = webgl.ERROR_STATUS.DEBUG;
 	if(webgl.debug){
 		webgl.error = $('<div class="error"></div>');
 		$('body').append(webgl.error);
@@ -152,7 +152,9 @@ webgl.drawScreen = function(){
 	
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
+    // ~ Light
+    webgl.setLight();
+    
     // ~ Camera
     mat4.identity(projection_matrix);
     mat4.identity(view_matrix);
@@ -240,6 +242,7 @@ webgl.drawTop = function(gl){
     gl.vertexAttribPointer(colorShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
 	
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[tLoop]);
+    // [send] shader -> projectionModelView
     gl.uniformMatrix4fv(colorShader.mvp_matrix_loc, false, projection_view_model_matrix);
     gl.drawElements(gl.TRIANGLES, size/2, gl.UNSIGNED_SHORT, size);
     
@@ -251,15 +254,19 @@ webgl.drawTop = function(gl){
 		
 	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[webgl.attribute.randTexTopIndex[i]]);
 	    gl.uniform1i(textureShader.texid_loc, 0);
-	    
+	    // Vertices
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.topPositionBuffer);
 	    gl.vertexAttribPointer(textureShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
-	
+	    // Texture
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.texCoordBufferList[tLoop]);	
 	    gl.vertexAttribPointer(textureShader.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
-
-    	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[tLoop]);
-		gl.uniformMatrix4fv(textureShader.mvp_matrix_loc, false, projection_view_model_matrix);
+	    // Normal
+	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.vertexNormalBuffer);
+	    gl.vertexAttribPointer(textureShader.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+	    // Index
+	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[tLoop]);
+	    // [send] shader -> projection, modelView
+	    webgl.setMatrixUniforms();
 		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, i*12);
 	}
 	gl.useProgram(null);
@@ -278,6 +285,7 @@ webgl.drawDown = function(gl){
     gl.vertexAttribPointer(colorShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
 	
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[dLoop]);
+    // [send] shader -> projectionModelView
     gl.uniformMatrix4fv(colorShader.mvp_matrix_loc, false, projection_view_model_matrix);
     gl.drawElements(gl.TRIANGLES, size/2, gl.UNSIGNED_SHORT, size);
     
@@ -290,16 +298,78 @@ webgl.drawDown = function(gl){
 	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[webgl.attribute.randTexDownIndex[i]]);
 	    gl.uniform1i(textureShader.texid_loc, 0);
 	    
+	    // Vertices
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.downPositionBuffer);
 	    gl.vertexAttribPointer(textureShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0 );
-	
+	    // Texture
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.texCoordBufferList[dLoop]);	
 	    gl.vertexAttribPointer(textureShader.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
-
-    	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[dLoop]);
-		gl.uniformMatrix4fv(textureShader.mvp_matrix_loc, false, projection_view_model_matrix);
+	    // Normal
+	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.vertexNormalBuffer);
+	    gl.vertexAttribPointer(textureShader.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+	    // Index
+	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBufferList[dLoop]);
+    	// [send] shader -> projection, modelView 
+    	webgl.setMatrixUniforms();
 		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, i*12);
 	}
 	gl.useProgram(null);
 };
 
+webgl.setMatrixUniforms = function(){
+	var gl = webgl.gl;
+	var textureShader = webgl.textureShader;
+    gl.uniformMatrix4fv(textureShader.p_matrix, false, projection_matrix);
+    gl.uniformMatrix4fv(textureShader.mv_matrix, false, view_model_matrix);
+
+    var normal_matrix = mat3.create();
+//  mat4.toInverseMat3(view_model_matrix, normal_matrix);
+    mat3.fromMat4(normal_matrix, view_model_matrix);
+    mat3.transpose(normal_matrix, normal_matrix);
+    gl.uniformMatrix3fv(textureShader.n_matrix, false, normal_matrix);
+};
+
+webgl.setLight = function(){
+	var gl = webgl.gl;
+	var textureShader = webgl.textureShader;
+	var specularHighlights = $('#specular').attr('checked') != undefined ? true : false;
+	gl.useProgram(textureShader);
+	gl.uniform1i(textureShader.showSpecularHighlightsUniform, specularHighlights);
+
+	var lighting = $('#lighting').attr('checked') != undefined ? true : false;
+    gl.uniform1i(textureShader.useLightingUniform, lighting);
+    if (lighting) {
+	
+	
+		gl.uniform1f(textureShader.materialShininessUniform, parseFloat($('#shininess').val()));
+		
+		gl.uniform3f(
+			textureShader.ambientColorUniform,
+			parseFloat($('#ambientR').val()),
+			parseFloat($('#ambientG').val()),
+			parseFloat($('#ambientB').val())
+		);
+	
+		gl.uniform3f(
+			textureShader.pointLightingLocationUniform,
+			parseFloat($('#locationX').val()),
+			parseFloat($('#locationY').val()),
+			parseFloat($('#locationZ').val())
+		);
+		
+		gl.uniform3f(
+			textureShader.pointLightingSpecularColorUniform,
+			parseFloat($('#specularR').val()),
+			parseFloat($('#specularG').val()),
+			parseFloat($('#specularB').val())
+		);
+		
+		gl.uniform3f(
+			textureShader.pointLightingDiffuseColorUniform,
+			parseFloat($('#diffuseR').val()),
+			parseFloat($('#diffuseG').val()),
+			parseFloat($('#diffuseB').val())
+		);
+    }
+	gl.useProgram(null);
+};

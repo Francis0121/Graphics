@@ -4,8 +4,8 @@
 	<title>Flip Board</title>
 	<meta content="text/html; charset=UTF-8"/>
 	<!-- Shader -->
-	<script data-src="shader/texture.vsh" data-name="texture" type="x-shader/x-vertex"></script>
-    <script data-src="shader/texture.fsh" data-name="texture" type="x-shader/x-fragment"></script>
+	<script data-src="shader/light.vsh" data-name="texture" type="x-shader/x-vertex"></script>
+    <script data-src="shader/light.fsh" data-name="texture" type="x-shader/x-fragment"></script>
     <script data-src="shader/color.vsh" data-name="color" type="x-shader/x-vertex"></script>
     <script data-src="shader/color.fsh" data-name="color" type="x-shader/x-fragment"></script>
 	<!-- JavaScript Shader Plugin -->
@@ -87,20 +87,25 @@
 				<button type="button" id="mix">do</button>
 			</li>
 			<li>
-				<h3>Material</h3>
-				<label for="shininess">Shininess : </label><input type="text" value="100" id="shininess" class="black_input"/>
+				<h3>Lighting</h3>
+				<label for="lighting">Lighting : </label><input type="checkbox" checked="checked" id="lighting" />
+			</li>
+			<li style="display: none;">
+				<h3>Material</h3>				
+				<label for="specular">Specular : </label><input type="checkbox" checked="checked" id="specular" />
+				<label for="shininess">Shininess : </label><input type="text" value="200" id="shininess" class="black_input"/>
 			</li>
 			<li>
 				<h3>Location</h3>
-				<label for="locationX">X : </label><input type="text" id="locationX" value="1.0" class="black_input"/>
-				<label for="locationY">Y : </label><input type="text" id="locationY" value="4.0" class="black_input"/>
-				<label for="locationZ">Z : </label><input type="text" id="locationZ" value="-20.0" class="black_input"/>
+				<label for="locationX">X : </label><input type="text" id="locationX" value="0.0" class="black_input"/>
+				<label for="locationY">Y : </label><input type="text" id="locationY" value="0.0" class="black_input"/>
+				<label for="locationZ">Z : </label><input type="text" id="locationZ" value="0.0" class="black_input"/>
 			</li>
 			<li>
 				<h3>Specular</h3>
-				<label for="specularR">R : </label><input type="text" id="specularR" value="0.8" class="black_input"/>
-				<label for="specularG">G : </label><input type="text" id="specularG" value="0.8" class="black_input"/>
-				<label for="specularB">B : </label><input type="text" id="specularB" value="0.8" class="black_input"/>
+				<label for="specularR">R : </label><input type="text" id="specularR" value="0.5" class="black_input"/>
+				<label for="specularG">G : </label><input type="text" id="specularG" value="1.0" class="black_input"/>
+				<label for="specularB">B : </label><input type="text" id="specularB" value="1.0" class="black_input"/>
 			</li>
 			<li>
 				<h3>Diffuse</h3>
@@ -110,9 +115,9 @@
 			</li>
 			<li>
 				<h3>Ambient</h3>
-				<label for="ambientR">R : </label><input type="text" id="ambientR" value="0.2" class="black_input"/>
-				<label for="ambientG">G : </label><input type="text" id="ambientG" value="0.2" class="black_input"/>
-				<label for="ambientB">B : </label><input type="text" id="ambientB" value="0.2" class="black_input"/>
+				<label for="ambientR">R : </label><input type="text" id="ambientR" value="0" class="black_input"/>
+				<label for="ambientG">G : </label><input type="text" id="ambientG" value="0" class="black_input"/>
+				<label for="ambientB">B : </label><input type="text" id="ambientB" value="0" class="black_input"/>
 			</li>
 		</ul>
 		<footer>
