@@ -11,7 +11,7 @@ webgl.errorHandler = function(error, mode){
 		break;
 	case 2:
 		span = $('<span class="debug"></span>');
-		span.append('<span class="head">[DEBUG]</span>');
+		span.append('<span class="head">[WARN]</span>');
 		break;
 	default:
 		span = $('<span class="default"></span>');
