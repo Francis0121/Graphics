@@ -77,45 +77,8 @@ shader.loadingAfterStart = function(){
 	    
 	    colorShader.mvp_matrix_loc = gl.getUniformLocation(colorShader, 'mvp_matrix');
 		
-	    // ~ Light
 	    webgl.colorShader = colorShader;
 	    webgl.errorHandler('Link Color shader', 1);
-	    
-	    var lightShader = gl.createProgram();
-	    var lightVertexShader =  shader.compileShader(gl, 'vertex', data.light.vertex),
-	    lightFragmentShader = shader.compileShader(gl, 'fragment', data.light.fragment);
-	
-	    gl.attachShader(lightShader, lightVertexShader);
-	    gl.attachShader(lightShader, lightFragmentShader);
-	    gl.linkProgram(lightShader);
-	    
-	    if (!gl.getProgramParameter(lightShader, gl.LINK_STATUS)) {
-	    	webgl.errorHandler('Could not initialise color shader', 2);
-	    }
-	    gl.useProgram(lightShader);
-	    
-	    lightShader.vertexPositionAttribute = gl.getAttribLocation(lightShader, 'a_vertex');
-	    gl.enableVertexAttribArray(lightShader.vertexPositionAttribute);
-	    
-	    lightShader.normalPositionAttribute = gl.getAttribLocation(lightShader, 'a_normal');
-	    gl.enableVertexAttribArray(lightShader.vertexPositionAttribute);
-	    
-	    lightShader.mvp_matrix_loc = gl.getUniformLocation(lightShader, 'u_mvp_matrix');
-	    lightShader.mv_matrix_loc = gl.getUniformLocation(lightShader, 'u_mv_matrix');
-	    lightShader.normal_matrix_loc = gl.getUniformLocation(lightShader, 'u_normal_matrix');
-	    
-	    lightShader.light_position = gl.getUniformLocation(lightShader, 'u_light_position');
-	    lightShader.light_ambient = gl.getUniformLocation(lightShader, 'u_light_ambient');
-	    lightShader.light_diffuse = gl.getUniformLocation(lightShader, 'u_light_diffuse');
-	    lightShader.light_specular = gl.getUniformLocation(lightShader, 'u_light_specular');
-	    
-	    lightShader.material_ambient = gl.getUniformLocation(lightShader, 'u_material_ambient');
-	    lightShader.material_diffuse = gl.getUniformLocation(lightShader, 'u_material_diffuse');
-	    lightShader.material_specular = gl.getUniformLocation(lightShader, 'u_material_specular');
-	    lightShader.material_shininess = gl.getUniformLocation(lightShader, 'u_material_shininess');
-	    
-	    webgl.lightShader = lightShader;
-	    webgl.errorHandler('Link Light shader', 1);
 	    
 	    /** Animate Begin */ 
 	    webgl.animate();
