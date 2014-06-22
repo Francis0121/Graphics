@@ -126,41 +126,50 @@ webgl.drawScreen = function(){
 	
     mat4.identity(model_matrix);
     
-    mat4.multiply(view_model_matrix, view_matrix, model_matrix);
-	mat4.multiply(projection_view_model_matrix, projection_matrix, view_model_matrix);
     // ~ Matrix
     
 	webgl.attribute.tLoop = webgl.attribute.fLoop;
 	webgl.attribute.dLoop = webgl.attribute.fLoop;
 	
+	mat4.identity(projection_view_model_matrix);
+	
 	for(var i=0; i<5; i++){
-//		// ~ Top
-//		matStack.push(model_matrix);
-//		
-//		if( webgl.attribute.isTop != webgl.ROTATION_STATUS.STOP && i == 0){
-//			mat4.rotateX(model_matrix, model_matrix, webgl.attribute.topAngle*Math.PI/180); 
-//		}
-//		mat4.translate(model_matrix, model_matrix, [0.0, 0.0, -5.0]);
-//		
+		// ~ Top
+		model_matrix = mat4.create();
+		view_model_matrix = mat4.create();
+		projection_view_model_matrix = mat4.create();
+		
+		mat4.translate(model_matrix, model_matrix, [0, 0, -i*5]);
+		if( webgl.attribute.isTop != webgl.ROTATION_STATUS.STOP && i == 0){
+//			
+			mat4.rotateX(model_matrix, model_matrix, webgl.attribute.topAngle*Math.PI/180); 
+		}
+		
+		mat4.multiply(view_model_matrix, view_matrix, model_matrix);
+		mat4.multiply(projection_view_model_matrix, projection_matrix, view_model_matrix);
+		
 		webgl.drawTop(gl, shaderProgram);
 		if(++webgl.attribute.tLoop == 5)
 			webgl.attribute.tLoop = 0;
 		
-//		model_matrix = matStack.pop();
-		
 		// ~ Down
-		/*mat4.translate(model_matrix, model_matrix, [0.0, 0.0, -i*5]);
-		if(webgl.attribute.isDown){
-			mat4.rotate(model_matrix, model_matrix, webgl.attribute.downAngle*Math.PI/180, [1, 0, 0] );
+		model_matrix = mat4.create();
+		view_model_matrix = mat4.create();
+		projection_view_model_matrix = mat4.create();
+		
+		mat4.translate(model_matrix, model_matrix, [0, 0, -i*5]);
+		if(webgl.attribute.isDown != webgl.ROTATION_STATUS.STOP && i == 0){
+			mat4.rotateX(model_matrix, model_matrix, webgl.attribute.downAngle*Math.PI/180);
 		}
 		mat4.multiply(view_model_matrix, view_matrix, model_matrix);
 		mat4.multiply(projection_view_model_matrix, projection_matrix, view_model_matrix);
-		*/
+		
 		webgl.drawDown(gl, shaderProgram);
 		if(--webgl.attribute.dLoop == -1)
 			webgl.attribute.dLoop = 4;
-
+		
 	}
+	
 	
 	if(webgl.attribute.scaling){
 		$('canvas').css('cursor', 'pointer');
@@ -199,7 +208,7 @@ webgl.drawDown = function(gl, shaderProgram){
 	for(var i=0; i<(size/12); i++){	
 		gl.activeTexture(gl.TEXTURE0);
 		
-	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[5-i]);
+	    gl.bindTexture(gl.TEXTURE_2D, webgl.texList[9-i]);
 	    gl.uniform1i(shaderProgram.texid_loc, 0);
 	    
 	    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.downPositionBuffer);
