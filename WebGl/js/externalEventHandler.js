@@ -14,6 +14,10 @@ webgl.externalEvent = function(){
 		webgl.makeRandTexIndex();
 	});
 	
+	$('select#intrinsic').bind('change', function(){
+		webgl.attribute.intrinsic = $(this).val();
+	});
+	
 	$('select#texture').bind('change', function(){
 		texture.initTexture();
 	});

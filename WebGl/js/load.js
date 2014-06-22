@@ -11,6 +11,11 @@ webgl.ROTATION_STATUS = {
 	UP : 2
 };
 
+webgl.INTRINSIC = {
+	ORTHO : 0,
+	PERSPECTIVE : 1
+};
+
 webgl.ERROR_STATUS = {
 	DEBUG : 2,
 	INFO : 1,
@@ -47,7 +52,9 @@ webgl.attribute = {
 	yMin : 0.1,
 	// RandomList
 	randTexTopIndex : new Array(),
-	randTexDownIndex : new Array()
+	randTexDownIndex : new Array(),
+	// Other
+	intrinsic : webgl.INTRINSIC.ORTHO
 };
 
 $(function() {
@@ -150,21 +157,25 @@ webgl.drawScreen = function(){
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
     // ~ Camera
-
     mat4.identity(projection_matrix);
-    mat4.ortho(projection_matrix, 
-    		-webgl.attribute.orthoWidth-0.1, 
-    		webgl.attribute.orthoWidth+0.1, 
-    		-webgl.attribute.orthoHeight, 
-    		webgl.attribute.orthoHeight+0.2, 
-    		0.1, 100.0);
-    
     mat4.identity(view_matrix);
-	mat4.lookAt(view_matrix, 
+
+    if(webgl.attribute.intrinsic == webgl.INTRINSIC.ORTHO){
+		mat4.ortho(projection_matrix, 
+			-webgl.attribute.orthoWidth-0.1, 
+			webgl.attribute.orthoWidth+0.1, 
+			-webgl.attribute.orthoHeight, 
+			webgl.attribute.orthoHeight+0.2, 
+			0.1, 100.0);
+		mat4.lookAt(view_matrix, 
 			[webgl.attribute.lookX, webgl.attribute.lookY, 1], 
 			[webgl.attribute.lookX, webgl.attribute.lookY, 0], 
 			[0, 1, 0]);
-	
+    }else if(webgl.attribute.intrinsic == webgl.INTRINSIC.PERSPECTIVE){
+    	mat4.perspective(projection_matrix, 9, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);		
+    	mat4.lookAt(view_matrix, [4, 0, 1], [0, 0, 0], [0, 1, 0]);
+    }
+    	
     mat4.identity(model_matrix);
     
     // ~ Matrix

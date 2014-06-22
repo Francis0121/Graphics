@@ -47,6 +47,9 @@ webgl.errorHandler = function(error, mode){
  * Mouse Down Event
  */
 webgl.handleMouseDown = function(){
+	if(webgl.attribute.intrinsic == webgl.INTRINSIC.PERSPECTIVE){
+		return;
+	}
 	if(!webgl.attribute.dragging){		
 		webgl.attribute.dragging = true;
 	}
@@ -57,7 +60,9 @@ webgl.handleMouseDown = function(){
  * Mouse Up Event
  */
 webgl.handleMouseUp = function(event){
-	
+	if(webgl.attribute.intrinsic == webgl.INTRINSIC.PERSPECTIVE){
+		return;
+	}
 	if(!webgl.attribute.scaling){
 		webgl.errorHandler('Height='+webgl.gl.viewportHeight/2);
 		if(webgl.gl.viewportHeight/2 > event.layerY){
@@ -94,6 +99,9 @@ webgl.handleMouseUp = function(event){
  * Mouse Wheel
  */
 webgl.handleMouseWheel = function(event){
+	if(webgl.attribute.intrinsic == webgl.INTRINSIC.PERSPECTIVE){
+		return;
+	}
 	var orthoHeight = webgl.attribute.orthoHeight,
 		orthoWidth = webgl.attribute.orthoWidth,
 		motionRate = webgl.attribute.motionRate,
@@ -148,6 +156,9 @@ webgl.handleMouseWheel = function(event){
  * Mouse Move
  */
 webgl.handleMouseMove = function(event){
+	if(webgl.attribute.intrinsic == webgl.INTRINSIC.PERSPECTIVE){
+		return;
+	}
 	var lookX = webgl.attribute.lookX,
 		lookY = webgl.attribute.lookY,
 		bPosX = webgl.attribute.bPosX,
@@ -185,6 +196,9 @@ webgl.handleMouseMove = function(event){
 };
 
 webgl.rotationEffect = function(){
+	if(webgl.attribute.intrinsic == webgl.INTRINSIC.PERSPECTIVE){
+		return;
+	}
 	var isTop = webgl.attribute.isTop,
 		isDown = webgl.attribute.isDown,
 		topAngle = webgl.attribute.topAngle,
