@@ -27,6 +27,12 @@ webgl.SCALING_MODE = {
 	SCALE : 1
 };
 
+webgl.TEXTURE_FILTER ={
+	LINEAR : 0,
+	NEARST : 1
+};
+
+
 webgl.attribute = {
 	tLoop : 0, // Top Loop
 	dLoop : 0, // Down Loop
@@ -61,7 +67,8 @@ webgl.attribute = {
 	randTexDownIndex : new Array(),
 	// Other
 	intrinsic : webgl.INTRINSIC.ORTHO,
-	scalingMode : webgl.SCALING_MODE.CAMERA
+	scalingMode : webgl.SCALING_MODE.CAMERA,
+	textureFilter : webgl.TEXTURE_FILTER.LINEAR
 };
 
 $(function() {

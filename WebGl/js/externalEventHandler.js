@@ -14,6 +14,11 @@ webgl.externalEvent = function(){
 		webgl.attribute.scalingMode = $(this).val();
 	});
 	
+	$('select#textureFilter').bind('change', function(){
+		webgl.attribute.textureFilter = $(this).val();
+		texture.initTexture();
+	});
+	
 	$('button#mix').bind('click', function(){
 		webgl.makeRandTexIndex();
 	});

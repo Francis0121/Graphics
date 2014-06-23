@@ -56,6 +56,18 @@
 					<option value="icon">Social Icon</option>
 					<option value="color">Color</option>
 				</select>
+				<label for="textureFilter">Filter</label>
+				<select id="textureFilter" name="textureFilter">
+					<option value="0">Linear</option>
+					<option value="1">Nearst</option>
+				</select>
+			</li>
+			<li>
+				<label for="intrinsic">Intrinsic</label>
+				<select id="intrinsic" name="intrinsic">
+					<option value="0">Ortho</option>
+					<option value="1">Perspective</option>
+				</select>
 				<label for="scalingMode">Scaling</label>
 				<select id="scalingMode" name="scalingMode">
 					<option value="0">Camera</option>
@@ -63,20 +75,13 @@
 				</select>
 			</li>
 			<li>
-				<label for="intrinsic">Change Intrinsic</label>
-				<select id="intrinsic" name="intrinsic">
-					<option value="0">Ortho</option>
-					<option value="1">Perspective</option>
-				</select>
-			</li>
-			<li>
-				<label for="floatingSpeed1">Floating Speed X : </label>
+				<label for="floatingSpeed1">FloodingX : </label>
 				<input type="text" value="0.001" id="floatingSpeed1" name="floatingSpeed1" readonly="readonly" class="empty_input"/>
 				<button type="button" id="speedUp1">up</button>
 				<button type="button" id="speedDown1">down</button>
 			</li>
 			<li>
-				<label for="floatingSpeed2">Floating Speed Y : </label>
+				<label for="floatingSpeed2">FloodingY : </label>
 				<input type="text" value="0.002" id="floatingSpeed2" name="floatingSpeed2" readonly="readonly" class="empty_input"/>
 				<button type="button" id="speedUp2">up</button>
 				<button type="button" id="speedDown2">down</button>
