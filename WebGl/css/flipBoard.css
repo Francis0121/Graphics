@@ -3,7 +3,7 @@
 .wrapper_background>header{ width: 650px; margin: 25px 50px; float: left;}
 .wrapper_background>article{ width: 350px; margin: 0 0 0 25px; float: left;}
 .wrapper_background>ul{ width: 300px; margin: 0 25px; float: left;}
-.wrapper_background>ul>li{width: 100%; float: left; font-size: 75%; margin: 3px 0;}
+.wrapper_background>ul>li{width: 100%; float: left; font-size: 75%; margin: 6px 0;}
 .wrapper_background>article>canvas{ width: 300px; height: 400px; border: 1px solid #e5e5e5; padding: 24px;}
 .wrapper_background>footer{ width: 650px; margin: 25px 50px; float: left;}
 .wrapper_background>footer>span{ font-size: 75%; }
@@ -15,3 +15,4 @@
 
 .empty_input{ border: 0; width: 32px;}
 .black_input{ border: 1px solid #808080; width: 40px; padding: 0px 3px; }
+.head_label{ font-weight: bold; width: 80px; float: left; padding: 4px 0;}
