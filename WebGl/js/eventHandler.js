@@ -105,7 +105,8 @@ webgl.handleMouseWheel = function(event){
 	var orthoHeight = webgl.attribute.orthoHeight,
 		orthoWidth = webgl.attribute.orthoWidth,
 		motionRate = webgl.attribute.motionRate,
-		scaling = webgl.attribute.scaling;
+		scaling = webgl.attribute.scaling,
+		zoom = webgl.attribute.zoom;
 	
 	scaling = true;
 	
@@ -119,34 +120,46 @@ webgl.handleMouseWheel = function(event){
 	} else if (event.detail) 
 		delta = -event.detail/3;
 	
-	if(delta > 0){		
-		orthoHeight*=1.1;
-		orthoWidth*=1.1;
-		if(motionRate < 0.03){
-			motionRate += 0.005;
+	if(webgl.attribute.scalingMode == webgl.SCALING_MODE.CAMERA){
+		
+		if(delta > 0){		
+			orthoHeight*=1.1;
+			orthoWidth*=1.1;
+		}else{
+			if(orthoHeight > 0.5){
+				orthoHeight*=0.9;
+				orthoWidth*=0.9;
+			}
 		}
-	}else{
-		if(orthoHeight > 0.5){
-			orthoHeight*=0.9;
-			orthoWidth*=0.9;
+		
+		if( orthoHeight > 4 ){
+			scaling = false;
+			orthoHeight = 4;
+			orthoWidth = 3;
+			webgl.attribute.lookX = 0.0;
+			webgl.attribute.lookY = 0.0;
 		}
-		if(motionRate > 0.005){
-			motionRate -= 0.005;
+	}else if(webgl.attribute.scalingMode == webgl.SCALING_MODE.SCALE){
+		if(delta > 0){		
+			zoom += 0.2;
+		}else{
+			zoom -= 0.2;
+		}
+		
+		if(zoom < 1){
+			zoom = 1;
+			scaling = false;
+			webgl.attribute.lookX = 0.0;
+			webgl.attribute.lookY = 0.0;
 		}
 	}
 	
-	if( orthoHeight > 4 ){
-		scaling = false;
-		orthoHeight = 4;
-		orthoWidth = 3;
-		webgl.attribute.lookX = 0.0;
-		webgl.attribute.lookY = 0.0;
-	}
 	
 	webgl.attribute.orthoHeight = orthoHeight;
 	webgl.attribute.orthoWidth = orthoWidth;
 	webgl.attribute.motionRate = motionRate;
 	webgl.attribute.scaling = scaling;
+	webgl.attribute.zoom = zoom;
 	webgl.drawScreen();
 	
 //	webgl.errorHandler('Mouse Wheel ', 1);

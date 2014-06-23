@@ -22,6 +22,11 @@ webgl.ERROR_STATUS = {
 	DEFAULT : 0,
 };
 
+webgl.SCALING_MODE = {
+	CAMERA : 0,
+	SCALE : 1
+};
+
 webgl.attribute = {
 	tLoop : 0, // Top Loop
 	dLoop : 0, // Down Loop
@@ -37,6 +42,7 @@ webgl.attribute = {
 	lookY : 0.0,
 	bPosX : 0.0, // Before Position X 
 	bPosY : 0.0,  // Before Position Y
+	zoom : 1.0,
 	// Rotation
 	isTop : webgl.ROTATION_STATUS.STOP,
 	isDown : webgl.ROTATION_STATUS.STOP,
@@ -54,7 +60,8 @@ webgl.attribute = {
 	randTexTopIndex : new Array(),
 	randTexDownIndex : new Array(),
 	// Other
-	intrinsic : webgl.INTRINSIC.ORTHO
+	intrinsic : webgl.INTRINSIC.ORTHO,
+	scalingMode : webgl.SCALING_MODE.CAMERA
 };
 
 $(function() {
@@ -160,16 +167,25 @@ webgl.drawScreen = function(){
     mat4.identity(view_matrix);
 
     if(webgl.attribute.intrinsic == webgl.INTRINSIC.ORTHO){
-		mat4.ortho(projection_matrix, 
-			-webgl.attribute.orthoWidth-0.1, 
-			webgl.attribute.orthoWidth+0.1, 
-			-webgl.attribute.orthoHeight, 
-			webgl.attribute.orthoHeight+0.2, 
-			0.1, 100.0);
+    	if(webgl.attribute.scalingMode == webgl.SCALING_MODE.CAMERA){
+    		mat4.ortho(projection_matrix, 
+    				-webgl.attribute.orthoWidth-0.1, 
+    				webgl.attribute.orthoWidth+0.1, 
+    				-webgl.attribute.orthoHeight, 
+    				webgl.attribute.orthoHeight+0.2, 
+    				0.1, 100.0);
+		}else{
+			mat4.ortho(projection_matrix, 
+					-3.1, 3.1, 
+					-4.0, 4.2, 
+					0.1, 100.0);
+		}
+		
 		mat4.lookAt(view_matrix, 
-			[webgl.attribute.lookX, webgl.attribute.lookY, 1], 
-			[webgl.attribute.lookX, webgl.attribute.lookY, 0], 
-			[0, 1, 0]);
+				[webgl.attribute.lookX, webgl.attribute.lookY, 1], 
+				[webgl.attribute.lookX, webgl.attribute.lookY, 0], 
+				[0, 1, 0]);
+		
     }else if(webgl.attribute.intrinsic == webgl.INTRINSIC.PERSPECTIVE){
     	mat4.perspective(projection_matrix, 9, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);		
     	mat4.lookAt(view_matrix, [4, 0, 1], [0, 0, 0], [0, 1, 0]);
@@ -194,6 +210,9 @@ webgl.drawScreen = function(){
 		if( webgl.attribute.isTop != webgl.ROTATION_STATUS.STOP && i == 0){
 			mat4.rotateX(model_matrix, model_matrix, webgl.attribute.topAngle*Math.PI/180); 
 		}
+		if( webgl.attribute.scalingMode == webgl.SCALING_MODE.SCALE){
+			mat4.scale(model_matrix, model_matrix, [webgl.attribute.zoom, webgl.attribute.zoom, 1.0])
+		}
 		
 		mat4.multiply(view_model_matrix, view_matrix, model_matrix);
 		mat4.multiply(projection_view_model_matrix, projection_matrix, view_model_matrix);
@@ -210,6 +229,9 @@ webgl.drawScreen = function(){
 		mat4.translate(model_matrix, model_matrix, [0, 0, -i*5]);
 		if(webgl.attribute.isDown != webgl.ROTATION_STATUS.STOP && i == 0){
 			mat4.rotateX(model_matrix, model_matrix, webgl.attribute.downAngle*Math.PI/180);
+		}
+		if(webgl.attribute.scalingMode == webgl.SCALING_MODE.SCALE){
+			mat4.scale(model_matrix, model_matrix, [webgl.attribute.zoom, webgl.attribute.zoom, 1.0])
 		}
 		
 		mat4.multiply(view_model_matrix, view_matrix, model_matrix);

@@ -10,6 +10,10 @@ webgl.externalEvent = function(){
 		}
 	});
 	
+	$('select#scalingMode').bind('change', function(){
+		webgl.attribute.scalingMode = $(this).val();
+	});
+	
 	$('button#mix').bind('click', function(){
 		webgl.makeRandTexIndex();
 	});
